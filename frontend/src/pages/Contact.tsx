@@ -1,7 +1,7 @@
 import Nav from '../components/Nav';
 import { useGetTest } from '../queries/useGetTests';
 
-function Home() {
+function Contact() {
   const { data, isLoading, isError } = useGetTest();
 
   console.log(data);
@@ -17,9 +17,9 @@ function Home() {
   return (
     <div>
       <Nav />
-      <p>Hey</p>
+      <p>Contact</p>
     </div>
   );
 }
 
-export default Home;
+export default Contact;
