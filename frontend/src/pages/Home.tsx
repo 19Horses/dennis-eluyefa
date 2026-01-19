@@ -1,4 +1,4 @@
-import Nav from '../components/Nav';
+import Layout from '../components/Layout';
 import { useGetTest } from '../queries/useGetTests';
 
 function Home() {
@@ -15,10 +15,9 @@ function Home() {
   }
 
   return (
-    <div>
-      <Nav />
+    <Layout>
       <p>Hey</p>
-    </div>
+    </Layout>
   );
 }
 

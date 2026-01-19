@@ -8,7 +8,7 @@ const NavContainer = styled.nav`
   align-items: center;
   gap: 1.5rem;
   padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 1.5rem);
-  max-width: 100%;
+  width: 100%;
 
   @media (max-width: 768px) {
     flex-direction: column;
