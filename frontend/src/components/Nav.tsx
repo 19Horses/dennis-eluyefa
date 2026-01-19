@@ -1,6 +1,6 @@
-import { Link, useLocation } from "react-router";
-import { styled } from "styled-components";
-import { COLORS } from "../constants";
+import { Link, useLocation } from 'react-router';
+import { styled } from 'styled-components';
+import { COLORS } from '../constants';
 
 const NavContainer = styled.nav`
   display: flex;
@@ -22,7 +22,7 @@ const NavLink = styled(Link)<{ $isActive: boolean }>`
   text-decoration: none;
   color: ${COLORS.primary};
   font-weight: bold;
-  opacity: ${({ $isActive }) => $isActive ? 1 : 0.5};
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0.5)};
   transition: opacity 0.3s ease;
   font-size: clamp(2.25rem, 6vw, 4.75rem); /* 36px → 76px */
   line-height: 1;
@@ -51,16 +51,24 @@ const NavLinks = styled.div`
 `;
 
 const Nav = () => {
-    const location = useLocation();
-    const isActive = (path: string) => location.pathname === path;
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
   return (
     <NavContainer>
-    <NavLink $isActive={isActive('/')} style={{ flexGrow: 1 }} to="/">home</NavLink>
-    <NavLinks>
-      <NavLink to="/work" $isActive={isActive('/work')}>work</NavLink>
-      <NavLink to="/about" $isActive={isActive('/about')}>about</NavLink>
-      <NavLink to="/contact" $isActive={isActive('/contact')}>contact</NavLink>
-    </NavLinks>
+      <NavLink $isActive={isActive('/')} style={{ flexGrow: 1 }} to="/">
+        home
+      </NavLink>
+      <NavLinks>
+        <NavLink to="/work" $isActive={isActive('/work')}>
+          work
+        </NavLink>
+        <NavLink to="/about" $isActive={isActive('/about')}>
+          about
+        </NavLink>
+        <NavLink to="/contact" $isActive={isActive('/contact')}>
+          contact
+        </NavLink>
+      </NavLinks>
     </NavContainer>
   );
 };
