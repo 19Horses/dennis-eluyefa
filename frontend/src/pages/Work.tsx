@@ -1,4 +1,4 @@
-import Nav from '../components/Nav';
+import Layout from '../components/Layout';
 import { useGetTest } from '../queries/useGetTests';
 
 function Work() {
@@ -15,10 +15,9 @@ function Work() {
   }
 
   return (
-    <div>
-      <Nav />
+    <Layout>
       <p>Work</p>
-    </div>
+    </Layout>
   );
 }
 

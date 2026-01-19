@@ -8,3 +8,16 @@
   font-weight: bold;
   font-style: normal;
 }
+
+div,
+nav {
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
