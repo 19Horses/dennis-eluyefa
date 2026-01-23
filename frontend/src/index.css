@@ -9,15 +9,25 @@
   font-style: normal;
 }
 
-div,
-nav {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+html,
 body {
-  overflow: hidden;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   margin: 0;
   padding: 0;
+}
+
+body {
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
 }
