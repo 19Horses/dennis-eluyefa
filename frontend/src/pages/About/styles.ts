@@ -116,6 +116,16 @@ export const ClientsList = styled.div`
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-items: center;
   }
+
+  // no scrollbar
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 `;
 
 
