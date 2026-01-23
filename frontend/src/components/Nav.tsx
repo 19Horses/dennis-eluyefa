@@ -1,13 +1,15 @@
 import { Link, useLocation } from 'react-router';
 import { styled } from 'styled-components';
 import { COLORS } from '../constants';
+import logo from '../assets/logo.png';
 
 const NavContainer = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
-  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 1.5rem);
+  padding: clamp(0.5rem, 2vw, 0.2rem) clamp(0.75rem, 3vw, 1.5rem);
+  padding-left: 0;
   width: 100%;
 
   @media (max-width: 768px) {
@@ -50,14 +52,36 @@ const NavLinks = styled.div`
   }
 `;
 
+const Logo = styled.img`
+  object-fit: contain;
+  width: clamp(160px, 22vw, 300px);
+  height: auto;
+  max-width: 100%;
+  transition: transform 200ms ease, opacity 200ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    transform: scale(1.01);
+    cursor: pointer;
+    opacity: 0.95;
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+`;
+
 const Nav = () => {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
   return (
     <NavContainer>
-      <NavLink $isActive={isActive('/')} style={{ flexGrow: 1 }} to="/">
-        home
-      </NavLink>
+      <Link to="/">
+        <Logo src={logo} alt="logo" />
+      </Link>
       <NavLinks>
         <NavLink to="/work" $isActive={isActive('/work')}>
           work
