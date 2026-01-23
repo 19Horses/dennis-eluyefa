@@ -1,7 +1,7 @@
 import Layout from '../components/Layout';
 import { COLORS } from '../constants';
 import { useGetLanding } from '../queries/useGetLanding';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 
 const HomeContainer = styled.div`
@@ -66,8 +66,8 @@ const HomeTitle = styled.p`
 function Home() {
   const { data, isLoading, isError } = useGetLanding();
   const [activeIndex, setActiveIndex] = useState(0);
-
-  console.log(data);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
 
   const imageUrls = useMemo(() => {
     return (
@@ -81,12 +81,51 @@ function Home() {
     if (imageUrls.length <= 1) return;
 
     const id = window.setInterval(() => {
+      if (isMouseDown) return;
       setActiveIndex((i) => (i + 1) % imageUrls.length);
     }, 5500);
 
     return () => window.clearInterval(id);
-  }, [imageUrls.length]);
+  }, [imageUrls.length, isMouseDown]);
 
+  useEffect(() => {
+    const cursor = document.createElement('div');
+    cursorRef.current = cursor;
+    cursor.style.width = '20px';
+    cursor.style.height = '20px';
+    cursor.style.borderRadius = '50%';
+    cursor.style.backgroundColor = COLORS.tertiary;
+    cursor.style.position = 'fixed';
+    cursor.style.top = '0px';
+    cursor.style.left = '0px';
+    cursor.style.transform = 'translate(-50%, -50%)';
+    cursor.style.pointerEvents = 'none';
+    cursor.style.zIndex = '9999';
+    cursor.style.transition = 'width 200ms ease, height 200ms ease';
+    document.body.appendChild(cursor);
+
+    const onMove = (e: MouseEvent) => {
+      cursor.style.left = `${e.clientX}px`;
+      cursor.style.top = `${e.clientY}px`;
+    };
+    window.addEventListener('mousemove', onMove);
+
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      document.body.removeChild(cursor);
+      cursorRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+
+    // Grow to 40px on hold, then it naturally stops at 40px until mouseup.
+    const sizePx = isMouseDown ? 60 : 20;
+    cursor.style.width = `${sizePx}px`;
+    cursor.style.height = `${sizePx}px`;
+  }, [isMouseDown]);
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -98,7 +137,11 @@ function Home() {
 
   return (
     <Layout>
-      <HomeContainer>
+      <HomeContainer
+        onMouseDown={() => setIsMouseDown(true)}
+        onMouseUp={() => setIsMouseDown(false)}
+        onMouseLeave={() => setIsMouseDown(false)}
+      >
         <HomeTitle>{data?.title}</HomeTitle>
         {imageUrls.map((url, idx) => (
           <HomeImage
