@@ -47,6 +47,7 @@ const ImageOverlay = styled.div`
   background-color: ${COLORS.primary};
   opacity: 0.15;
   z-index: 1;
+  cursor: none;
 `;
 
 const HomeTitle = styled.p`
@@ -67,6 +68,7 @@ function Home() {
   const { data, isLoading, isError } = useGetLanding();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
+  const [isMouseOver, setIsMouseOver] = useState(false);
   const cursorRef = useRef<HTMLDivElement | null>(null);
 
   const imageUrls = useMemo(() => {
@@ -89,6 +91,7 @@ function Home() {
   }, [imageUrls.length, isMouseDown]);
 
   useEffect(() => {
+    if (!isMouseOver) return;
     const cursor = document.createElement('div');
     cursorRef.current = cursor;
     cursor.style.width = '20px';
@@ -115,13 +118,12 @@ function Home() {
       document.body.removeChild(cursor);
       cursorRef.current = null;
     };
-  }, []);
+  }, [isMouseOver]);
 
   useEffect(() => {
     const cursor = cursorRef.current;
     if (!cursor) return;
 
-    // Grow to 40px on hold, then it naturally stops at 40px until mouseup.
     const sizePx = isMouseDown ? 60 : 20;
     cursor.style.width = `${sizePx}px`;
     cursor.style.height = `${sizePx}px`;
@@ -151,7 +153,7 @@ function Home() {
             $isActive={idx === activeIndex}
           />
         ))}
-        <ImageOverlay />
+        <ImageOverlay onMouseOver={() => setIsMouseOver(true)} onMouseLeave={() => setIsMouseOver(false)} />
       </HomeContainer>
     </Layout>
   );

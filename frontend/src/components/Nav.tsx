@@ -33,6 +33,11 @@ const NavLink = styled(Link)<{ $isActive: boolean }>`
   &:hover {
     opacity: 1;
   }
+
+  &::selection {
+    background-color: ${COLORS.primary};
+    color: ${COLORS.tertiary};
+  }
 `;
 
 const NavLinks = styled.div`
@@ -71,6 +76,10 @@ const Logo = styled.img`
 
   &:active {
     transform: scale(0.99);
+  }
+
+  &::selection {
+    background-color: transparent;
   }
 `;
 
