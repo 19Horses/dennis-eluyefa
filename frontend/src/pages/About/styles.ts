@@ -1,10 +1,7 @@
-import Layout from '../components/Layout';
-import { useGetClients } from '../queries/useGetClients';
-import { Loading } from '../components/Loading';
 import { styled } from 'styled-components';
-import { COLORS } from '../constants';
+import { COLORS } from '../../constants';
 
-const AboutContainer = styled.div`
+export const AboutContainer = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -19,7 +16,7 @@ const AboutContainer = styled.div`
   }
 `;
 
-const ClientContainer = styled.div`
+export const ClientContainer = styled.div`
   flex: 0 0 clamp(180px, 20vw, 260px);
   width: auto;
   height: 100%;
@@ -40,7 +37,7 @@ const ClientContainer = styled.div`
   }
 `;
 
-const QuoteContainer = styled.div`
+export const QuoteContainer = styled.div`
   flex: 1 1 0;
   width: auto;
   height: 100%;
@@ -57,7 +54,7 @@ const QuoteContainer = styled.div`
   }
 `;
 
-const QuoteText = styled.p`
+export const QuoteText = styled.p`
   font-family: 'Helvetica Neue Bold', sans-serif;
   font-size: clamp(2.1rem, 9vw, 7.5rem);
   color: ${COLORS.secondary};
@@ -82,7 +79,7 @@ const QuoteText = styled.p`
   }
 `;
 
-const ClientText = styled.p`
+export const ClientText = styled.p`
   font-family: 'Helvetica Neue Medium', sans-serif;
   font-size: clamp(0.9rem, 1.6vw, 1.2rem);
   color: ${COLORS.tertiary};
@@ -102,12 +99,12 @@ const ClientText = styled.p`
   }
 `;
 
-const ClientHeading = styled(ClientText)`
+export const ClientHeading = styled(ClientText)`
   text-decoration: underline;
   margin-bottom: 0.8rem;
 `;
 
-const ClientsList = styled.div`
+export const ClientsList = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr;
@@ -121,34 +118,4 @@ const ClientsList = styled.div`
   }
 `;
 
-function About() {
-  const { data, isLoading, isError } = useGetClients();
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (isError) {
-    return <p>Error!</p>;
-  }
-
-  return (
-    <Layout>
-      <AboutContainer>
-        <QuoteContainer>
-          <QuoteText>“i just want to create images full of life.”</QuoteText>
-        </QuoteContainer>
-        <ClientContainer>
-          <ClientHeading>select clients</ClientHeading>
-          <ClientsList>
-            {data?.map((client) => (
-              <ClientText key={client}>{client}</ClientText>
-            ))}
-          </ClientsList>
-        </ClientContainer>
-      </AboutContainer>
-    </Layout>
-  );
-}
-
-export default About;
