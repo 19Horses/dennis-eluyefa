@@ -7,7 +7,7 @@ export const landingType = defineType({
   fields: [
     defineField({
       name: 'title',
-      type: 'string',
+      type: 'text',
       validation: (rule) => rule.required(),
     }),
     defineField({
