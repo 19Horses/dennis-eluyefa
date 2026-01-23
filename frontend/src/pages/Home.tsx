@@ -59,7 +59,7 @@ const HomeTitle = styled.p`
   z-index: 2;
   text-align: left;
   transition: all 1s ease;
-  
+
   animation: ${fadeIn} 1s ease both;
 
   &::selection {
@@ -174,7 +174,10 @@ function Home() {
             $isActive={idx === activeIndex}
           />
         ))}
-        <ImageOverlay onMouseOver={() => setIsMouseOver(true)} onMouseLeave={() => setIsMouseOver(false)} />
+        <ImageOverlay
+          onMouseOver={() => setIsMouseOver(true)}
+          onMouseLeave={() => setIsMouseOver(false)}
+        />
       </HomeContainer>
     </Layout>
   );
