@@ -151,7 +151,11 @@ function Home() {
   }, [isMouseDown]);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Layout>
+      <HomeContainer>
+        <p>Loading...</p>
+      </HomeContainer>
+      </Layout>
   }
 
   if (isError) {
