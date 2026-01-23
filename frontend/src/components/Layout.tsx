@@ -17,6 +17,10 @@ const LayoutContent = styled.div`
   flex-grow: 1;
   margin: 0 auto;
   background-color: ${COLORS.primary};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

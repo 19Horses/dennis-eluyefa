@@ -4,6 +4,7 @@ import { useGetLanding } from '../queries/useGetLanding';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 import { fadeIn } from '../../styles/animations';
+import { Loading } from '../components/Loading';
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -151,11 +152,7 @@ function Home() {
   }, [isMouseDown]);
 
   if (isLoading) {
-    return <Layout>
-      <HomeContainer>
-        <p>Loading...</p>
-      </HomeContainer>
-      </Layout>
+    return <Loading />
   }
 
   if (isError) {
