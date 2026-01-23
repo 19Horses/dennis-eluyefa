@@ -3,6 +3,7 @@ import { COLORS } from '../constants';
 import { useGetLanding } from '../queries/useGetLanding';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { styled } from 'styled-components';
+import { fadeIn } from '../../styles/animations';
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -25,7 +26,7 @@ const HomeImage = styled.img<{ $isActive: boolean }>`
   object-fit: cover;
   z-index: 0;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
-  transition: opacity 1500ms ease;
+  transition: opacity 1000ms ease;
   pointer-events: none;
 
   &::selection {
@@ -57,6 +58,9 @@ const HomeTitle = styled.p`
   color: ${COLORS.secondary};
   z-index: 2;
   text-align: left;
+  transition: all 1s ease;
+  
+  animation: ${fadeIn} 1s ease both;
 
   &::selection {
     background-color: ${COLORS.secondary};
@@ -66,7 +70,8 @@ const HomeTitle = styled.p`
 
 function Home() {
   const { data, isLoading, isError } = useGetLanding();
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Start with no active image so the first "activation" can animate (fade in).
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const cursorRef = useRef<HTMLDivElement | null>(null);
@@ -78,6 +83,22 @@ function Home() {
         .filter((url): url is string => Boolean(url)) ?? []
     );
   }, [data?.images]);
+
+  useEffect(() => {
+    if (imageUrls.length === 0) return;
+    if (activeIndex !== -1) return;
+
+    // Ensure we paint once with all images at opacity 0, then fade the first in.
+    let raf2: number | null = null;
+    const raf1 = window.requestAnimationFrame(() => {
+      raf2 = window.requestAnimationFrame(() => setActiveIndex(0));
+    });
+
+    return () => {
+      window.cancelAnimationFrame(raf1);
+      if (raf2 != null) window.cancelAnimationFrame(raf2);
+    };
+  }, [activeIndex, imageUrls.length]);
 
   useEffect(() => {
     if (imageUrls.length <= 1) return;
