@@ -64,5 +64,3 @@ export const HomeTitle = styled.p`
     color: ${COLORS.tertiary};
   }
 `;
-
-

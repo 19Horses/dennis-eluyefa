@@ -127,5 +127,3 @@ export const ClientsList = styled.div`
     scrollbar-width: none;
   }
 `;
-
-
