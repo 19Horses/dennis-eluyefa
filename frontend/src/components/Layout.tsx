@@ -5,18 +5,22 @@ import { styled } from 'styled-components';
 const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  overflow: hidden;
 `;
 
 const LayoutContent = styled.div`
   width: 100%;
-  height: 100%;
-  flex-grow: 1;
-  margin: 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
   background-color: ${COLORS.primary};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
 `;
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
