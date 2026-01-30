@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getApiUrl } from '../sanityIntegration';
 import axios from 'axios';
+import { formatDate } from '../utils';
 
 export type ProjectImage = {
   _key: string;
@@ -45,6 +46,10 @@ export const useGetProjects = () => {
   return useQuery({
     queryKey: ['projects'],
     queryFn: getProjects,
-    select: (res) => res.result,
+    select: (res) =>
+      res.result?.map((project) => ({
+        ...project,
+        date: formatDate(project.date),
+      })) ?? [],
   });
 };
