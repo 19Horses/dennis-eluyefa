@@ -21,8 +21,8 @@ function Work() {
     return (
         <Layout>
             <WorkContainer>
-                {data?.map((project) => (
-                    <ProjectCard key={project._id}>
+                {data?.map((project, index) => (
+                    <ProjectCard key={project._id} $index={index}>
 
                         <ProjectImage src={project.images[0].asset?.url} alt={project.title} />
                         <ProjectTitle>{project.title}</ProjectTitle>
