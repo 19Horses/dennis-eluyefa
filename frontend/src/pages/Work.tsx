@@ -1,8 +1,8 @@
 import Layout from '../components/Layout';
-import { useGetTest } from '../queries/useGetTests';
+import { useGetProjects } from '../queries/useGetProjects';
 
 function Work() {
-  const { data, isLoading, isError } = useGetTest();
+  const { data, isLoading, isError } = useGetProjects();
 
   console.log(data);
 

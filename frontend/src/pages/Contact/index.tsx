@@ -1,5 +1,5 @@
 import Layout from '../../components/Layout';
-import { useGetTest } from '../../queries/useGetTests';
+import { useGetProjects } from '../../queries/useGetProjects';
 import {
   ContactContainer,
   LeftSubtext,
@@ -12,7 +12,7 @@ import {
 const EMAIL = 'contact@denniseluyefa.com';
 
 function Contact() {
-  const { data, isLoading, isError } = useGetTest();
+  const { data, isLoading, isError } = useGetProjects();
 
   console.log(data);
 
