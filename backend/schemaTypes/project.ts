@@ -43,6 +43,7 @@ export const projectType = defineType({
       name: 'images',
       type: 'array',
       of: [{type: 'image'}],
+      validation: (rule) => rule.required(),
     }),
   ],
 })
