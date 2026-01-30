@@ -35,7 +35,7 @@ export const projectType = defineType({
       name: 'date',
       type: 'date',
       options: {
-        dateFormat: 'MM-YYYY',
+        dateFormat: "MMM 'YY",
       },
       validation: (rule) => rule.required(),
     }),
