@@ -1,5 +1,6 @@
 import { styled } from 'styled-components';
 import { COLORS } from '../../constants';
+import { fadeIn } from '../../../styles/animations';
 
 export const AboutContainer = styled.div`
   width: 100%;
@@ -33,6 +34,7 @@ export const ClientContainer = styled.div`
   padding: 0.8rem;
   overflow-y: auto;
   overflow-x: hidden;
+  animation: ${fadeIn} 0.6s ease-out 0.45s both;
 
   @media (max-width: 768px) {
     flex: 0 0 auto;
@@ -55,6 +57,7 @@ export const QuoteContainer = styled.div`
   background-color: ${COLORS.primary};
   padding: 1rem;
   box-sizing: border-box;
+  animation: ${fadeIn} 0.6s ease-out 0.15s both;
 
   @media (max-width: 768px) {
     padding: 1.2rem 1rem;
@@ -71,6 +74,7 @@ export const ImageContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
+  animation: ${fadeIn} 0.6s ease-out 0.3s both;
 
   @media (max-width: 768px) {
     min-width: 0;
@@ -139,7 +143,9 @@ export const QuoteText = styled.p`
   }
 `;
 
-export const ClientText = styled.p`
+const CLIENT_ANIMATION_DELAY_STEP = 0.05;
+
+export const ClientText = styled.p<{ $delay?: number }>`
   font-family: 'Helvetica Neue Medium', sans-serif;
   font-size: clamp(0.9rem, 1.6vw, 1.2rem);
   color: ${COLORS.tertiary};
@@ -148,6 +154,8 @@ export const ClientText = styled.p`
   margin: 0;
   max-width: 100%;
   overflow-wrap: anywhere;
+  animation: ${fadeIn} 0.5s ease-out
+    ${({ $delay = 0 }) => $delay * CLIENT_ANIMATION_DELAY_STEP}s both;
 
   &::selection {
     background-color: ${COLORS.tertiary};

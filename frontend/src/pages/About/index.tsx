@@ -38,8 +38,8 @@ function About() {
         <ClientContainer>
           <ClientHeading>select clients</ClientHeading>
           <ClientsList>
-            {data?.map((client) => (
-              <ClientText key={client}>{client}</ClientText>
+            {data?.map((client, index) => (
+              <ClientText key={client} $delay={index}>{client}</ClientText>
             ))}
           </ClientsList>
         </ClientContainer>
