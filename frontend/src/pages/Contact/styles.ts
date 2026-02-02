@@ -1,5 +1,15 @@
-import { styled } from 'styled-components';
+import { keyframes, styled } from 'styled-components';
 import { COLORS } from '../../constants';
+import { fadeIn } from '../../../styles/animations';
+
+const backgroundFadeFromBlack = keyframes`
+  from {
+    background-color: #000000;
+  }
+  to {
+    background-color: ${COLORS.tertiary};
+  }
+`;
 
 export const ContactContainer = styled.div`
   width: 100%;
@@ -10,6 +20,7 @@ export const ContactContainer = styled.div`
   justify-content: space-between;
   background-color: ${COLORS.tertiary};
   padding: 2rem;
+  animation: ${backgroundFadeFromBlack} 0.8s ease-out forwards;
 `;
 
 export const ContactText = styled.p`
@@ -19,6 +30,7 @@ export const ContactText = styled.p`
   font-weight: bold;
   text-align: center;
   font-style: italic;
+  animation: ${fadeIn} 0.6s ease-out 0.3s both;
 
   &::selection {
     background-color: ${COLORS.secondary};
@@ -44,6 +56,7 @@ export const ContactSubtext = styled.p`
 export const LeftSubtext = styled(ContactSubtext)`
   text-align: left;
   align-self: flex-start;
+  animation: ${fadeIn} 0.6s ease-out 0.15s both;
 
   @media (max-width: 768px) {
     text-align: center;
@@ -54,6 +67,7 @@ export const LeftSubtext = styled(ContactSubtext)`
 export const RightSubtext = styled(ContactSubtext)`
   text-align: right;
   align-self: flex-end;
+  animation: ${fadeIn} 0.6s ease-out 0.45s both;
 
   @media (max-width: 768px) {
     text-align: center;
