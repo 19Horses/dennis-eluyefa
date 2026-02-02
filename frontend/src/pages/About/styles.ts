@@ -1,14 +1,18 @@
 import { styled } from 'styled-components';
 import { COLORS } from '../../constants';
+import { fadeIn } from '../../../styles/animations';
 
 export const AboutContainer = styled.div`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 100%;
   display: flex;
   flex-direction: row;
   gap: 0.8rem;
   padding: 0.8rem;
   box-sizing: border-box;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -17,8 +21,9 @@ export const AboutContainer = styled.div`
 `;
 
 export const ClientContainer = styled.div`
-  flex: 0 0 clamp(180px, 20vw, 260px);
-  width: auto;
+  flex: 0 1 clamp(180px, 20vw, 260px);
+  min-width: 0;
+  max-width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -27,11 +32,14 @@ export const ClientContainer = styled.div`
   background-color: ${COLORS.secondary};
   box-sizing: border-box;
   padding: 0.8rem;
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: ${fadeIn} 0.6s ease-out 0.45s both;
 
   @media (max-width: 768px) {
     flex: 0 0 auto;
     width: 100%;
+    min-width: 0;
     align-items: center;
     padding: 0.9rem 0.8rem;
   }
@@ -39,7 +47,8 @@ export const ClientContainer = styled.div`
 
 export const QuoteContainer = styled.div`
   flex: 1 1 0;
-  width: auto;
+  min-width: 0;
+  max-width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -48,9 +57,62 @@ export const QuoteContainer = styled.div`
   background-color: ${COLORS.primary};
   padding: 1rem;
   box-sizing: border-box;
+  animation: ${fadeIn} 0.6s ease-out 0.15s both;
 
   @media (max-width: 768px) {
     padding: 1.2rem 1rem;
+    min-width: 0;
+  }
+`;
+
+export const ImageContainer = styled.div`
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: ${fadeIn} 0.6s ease-out 0.3s both;
+
+  @media (max-width: 768px) {
+    min-width: 0;
+    width: 100%;
+  }
+`;
+
+export const BeAboutImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  &::selection {
+    background-color: transparent;
+  }
+`;
+
+export const BioText = styled.p`
+  font-family: 'Helvetica Neue Medium', sans-serif;
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  color: ${COLORS.secondary};
+  text-align: center;
+  text-justify: inter-word;
+  width: 100%;
+  text-align: center;
+  font-style: italic;
+  margin: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 0.8rem;
+  box-sizing: border-box;
+
+  &::selection {
+    background-color: ${COLORS.secondary};
+    color: ${COLORS.tertiary};
   }
 `;
 
@@ -63,6 +125,8 @@ export const QuoteText = styled.p`
   line-height: 0.86;
   margin: 0;
   max-width: min(12ch, 92%);
+  min-width: 0;
+  overflow-wrap: break-word;
 
   &::selection {
     background-color: transparent;
@@ -79,7 +143,9 @@ export const QuoteText = styled.p`
   }
 `;
 
-export const ClientText = styled.p`
+const CLIENT_ANIMATION_DELAY_STEP = 0.05;
+
+export const ClientText = styled.p<{ $delay?: number }>`
   font-family: 'Helvetica Neue Medium', sans-serif;
   font-size: clamp(0.9rem, 1.6vw, 1.2rem);
   color: ${COLORS.tertiary};
@@ -88,6 +154,8 @@ export const ClientText = styled.p`
   margin: 0;
   max-width: 100%;
   overflow-wrap: anywhere;
+  animation: ${fadeIn} 0.5s ease-out
+    ${({ $delay = 0 }) => $delay * CLIENT_ANIMATION_DELAY_STEP}s both;
 
   &::selection {
     background-color: ${COLORS.tertiary};
