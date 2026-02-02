@@ -3,12 +3,15 @@ import { COLORS } from '../../constants';
 
 export const AboutContainer = styled.div`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 100%;
   display: flex;
   flex-direction: row;
   gap: 0.8rem;
   padding: 0.8rem;
   box-sizing: border-box;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -17,8 +20,9 @@ export const AboutContainer = styled.div`
 `;
 
 export const ClientContainer = styled.div`
-  flex: 0 0 clamp(180px, 20vw, 260px);
-  width: auto;
+  flex: 0 1 clamp(180px, 20vw, 260px);
+  min-width: 0;
+  max-width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -27,11 +31,13 @@ export const ClientContainer = styled.div`
   background-color: ${COLORS.secondary};
   box-sizing: border-box;
   padding: 0.8rem;
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     flex: 0 0 auto;
     width: 100%;
+    min-width: 0;
     align-items: center;
     padding: 0.9rem 0.8rem;
   }
@@ -39,7 +45,8 @@ export const ClientContainer = styled.div`
 
 export const QuoteContainer = styled.div`
   flex: 1 1 0;
-  width: auto;
+  min-width: 0;
+  max-width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -51,6 +58,57 @@ export const QuoteContainer = styled.div`
 
   @media (max-width: 768px) {
     padding: 1.2rem 1rem;
+    min-width: 0;
+  }
+`;
+
+export const ImageContainer = styled.div`
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  @media (max-width: 768px) {
+    min-width: 0;
+    width: 100%;
+  }
+`;
+
+export const BeAboutImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  &::selection {
+    background-color: transparent;
+  }
+`;
+
+export const BioText = styled.p`
+  font-family: 'Helvetica Neue Medium', sans-serif;
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  color: ${COLORS.secondary};
+  text-align: center;
+  text-justify: inter-word;
+  width: 100%;
+  text-align: center;
+  font-style: italic;
+  margin: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 0.8rem;
+  box-sizing: border-box;
+
+  &::selection {
+    background-color: ${COLORS.secondary};
+    color: ${COLORS.tertiary};
   }
 `;
 
@@ -63,6 +121,8 @@ export const QuoteText = styled.p`
   line-height: 0.86;
   margin: 0;
   max-width: min(12ch, 92%);
+  min-width: 0;
+  overflow-wrap: break-word;
 
   &::selection {
     background-color: transparent;
