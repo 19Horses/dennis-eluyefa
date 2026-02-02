@@ -1,29 +1,16 @@
 import Layout from '../../components/Layout';
-import { useGetProjects } from '../../queries/useGetProjects';
 import {
   ContactContainer,
-  LeftSubtext,
-  Underline,
-  Email,
   ContactText,
+  Email,
+  LeftSubtext,
   RightSubtext,
+  Underline,
 } from './styles';
 
 const EMAIL = 'contact@denniseluyefa.com';
 
 function Contact() {
-  const { data, isLoading, isError } = useGetProjects();
-
-  console.log(data);
-
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (isError) {
-    return <p>Error!</p>;
-  }
-
   return (
     <Layout>
       <ContactContainer>
