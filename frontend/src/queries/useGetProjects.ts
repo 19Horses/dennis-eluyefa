@@ -53,3 +53,12 @@ export const useGetProjects = () => {
       })) ?? [],
   });
 };
+
+export const useGetProject = (slug: string) => {
+  return useQuery({
+    queryKey: ['project', slug],
+    queryFn: () => getProjects(),
+    select: (res) =>
+      res.result?.find((project) => project.slug.current === slug) ?? null,
+  });
+};

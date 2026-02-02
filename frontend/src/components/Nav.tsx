@@ -19,13 +19,13 @@ const NavContainer = styled.nav`
   }
 `;
 
-const NavLink = styled(Link)<{ $isActive: boolean }>`
+const NavLink = styled(Link)<{ $isActive: boolean; $isProject?: boolean }>`
   font-family: 'Helvetica Neue Bold', sans-serif;
   text-decoration: none;
-  color: ${COLORS.primary};
+  color: ${({ $isProject }) => ($isProject ? COLORS.tertiary : COLORS.primary)};
   font-weight: bold;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0.5)};
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, color 0.3s ease;
   font-size: clamp(2.25rem, 6vw, 4.75rem); /* 36px → 76px */
   line-height: 1;
   max-width: 100%;
@@ -86,13 +86,19 @@ const Logo = styled.img`
 const Nav = () => {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
+  const isProject =
+    location.pathname.startsWith('/work/') && location.pathname !== '/work';
   return (
     <NavContainer>
       <Link to="/">
         <Logo src={logo} alt="logo" />
       </Link>
       <NavLinks>
-        <NavLink to="/work" $isActive={isActive('/work')}>
+        <NavLink
+          to="/work"
+          $isActive={isActive('/work') || isProject}
+          $isProject={isProject}
+        >
           work
         </NavLink>
         <NavLink to="/about" $isActive={isActive('/about')}>
