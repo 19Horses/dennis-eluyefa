@@ -16,7 +16,11 @@ import {
 } from './styles';
 
 function About() {
-  const { data: aboutData, isLoading: aboutIsLoading, isError: aboutIsError } = useGetAbout();
+  const {
+    data: aboutData,
+    isLoading: aboutIsLoading,
+    isError: aboutIsError,
+  } = useGetAbout();
   const { data, isLoading, isError } = useGetClients();
 
   if (isLoading || aboutIsLoading) {
@@ -29,7 +33,11 @@ function About() {
     <Layout>
       <AboutContainer>
         <QuoteContainer>
-          {aboutData?.quote ? <QuoteText>“{aboutData.quote}”</QuoteText> : <QuoteText>“i just want to create images full of life.”</QuoteText>}
+          {aboutData?.quote ? (
+            <QuoteText>“{aboutData.quote}”</QuoteText>
+          ) : (
+            <QuoteText>“i just want to create images full of life.”</QuoteText>
+          )}
         </QuoteContainer>
         <ImageContainer>
           <BeAboutImage src={aboutData?.image?.asset?.url} alt="About" />
@@ -39,7 +47,9 @@ function About() {
           <ClientHeading>select clients</ClientHeading>
           <ClientsList>
             {data?.map((client, index) => (
-              <ClientText key={client} $delay={index}>{client}</ClientText>
+              <ClientText key={client} $delay={index}>
+                {client}
+              </ClientText>
             ))}
           </ClientsList>
         </ClientContainer>
