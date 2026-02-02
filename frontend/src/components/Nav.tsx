@@ -19,7 +19,7 @@ const NavContainer = styled.nav`
   }
 `;
 
-const NavLink = styled(Link) <{ $isActive: boolean, $isProject?: boolean }>`
+const NavLink = styled(Link)<{ $isActive: boolean; $isProject?: boolean }>`
   font-family: 'Helvetica Neue Bold', sans-serif;
   text-decoration: none;
   color: ${({ $isProject }) => ($isProject ? COLORS.tertiary : COLORS.primary)};
@@ -86,14 +86,19 @@ const Logo = styled.img`
 const Nav = () => {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
-  const isProject = location.pathname.startsWith('/work/') && location.pathname !== '/work';
+  const isProject =
+    location.pathname.startsWith('/work/') && location.pathname !== '/work';
   return (
     <NavContainer>
       <Link to="/">
         <Logo src={logo} alt="logo" />
       </Link>
       <NavLinks>
-        <NavLink to="/work" $isActive={isActive('/work') || isProject} $isProject={isProject}>
+        <NavLink
+          to="/work"
+          $isActive={isActive('/work') || isProject}
+          $isProject={isProject}
+        >
           work
         </NavLink>
         <NavLink to="/about" $isActive={isActive('/about')}>

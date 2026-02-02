@@ -29,7 +29,11 @@ function Work() {
     <Layout>
       <WorkContainer>
         {data?.map((project, index) => (
-          <ProjectCard key={project._id} $index={index} onClick={() => navigate(`/work/${project.slug.current}`)}>
+          <ProjectCard
+            key={project._id}
+            $index={index}
+            onClick={() => navigate(`/work/${project.slug.current}`)}
+          >
             <ProjectImage
               src={project.images[0].asset?.url}
               alt={project.title}
