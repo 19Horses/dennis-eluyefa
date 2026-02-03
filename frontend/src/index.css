@@ -31,3 +31,7 @@ body {
 #root {
   height: 100%;
 }
+
+img::selection {
+  background-color: transparent;
+}

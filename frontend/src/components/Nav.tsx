@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router';
 import { styled } from 'styled-components';
 import { COLORS } from '../constants';
+import { fadeIn, fadeInPreserveOpacity } from '../../styles/animations';
 import logo from '../assets/logo.png';
 
 const NavContainer = styled.nav`
@@ -19,7 +20,13 @@ const NavContainer = styled.nav`
   }
 `;
 
-const NavLink = styled(Link)<{ $isActive: boolean; $isProject?: boolean }>`
+const STAGGER_DELAY = 0.1;
+
+const NavLink = styled(Link)<{
+  $isActive: boolean;
+  $isProject?: boolean;
+  $index?: number;
+}>`
   font-family: 'Helvetica Neue Bold', sans-serif;
   text-decoration: none;
   color: ${({ $isProject }) => ($isProject ? COLORS.tertiary : COLORS.primary)};
@@ -30,6 +37,9 @@ const NavLink = styled(Link)<{ $isActive: boolean; $isProject?: boolean }>`
   line-height: 1;
   max-width: 100%;
   overflow-wrap: anywhere;
+  animation: ${fadeInPreserveOpacity} 0.5s ease backwards;
+  animation-delay: ${({ $index = 0 }) => 0.15 + $index * STAGGER_DELAY}s;
+
   &:hover {
     opacity: 1;
   }
@@ -62,11 +72,9 @@ const Logo = styled.img`
   width: clamp(160px, 22vw, 300px);
   height: auto;
   max-width: 100%;
+  opacity: 0;
+  animation: ${fadeIn} 0.5s ease forwards;
   transition: transform 200ms ease, opacity 200ms ease;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 
   &:hover {
     transform: scale(1.01);
@@ -76,6 +84,12 @@ const Logo = styled.img`
 
   &:active {
     transform: scale(0.99);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+    transition: none;
   }
 
   &::selection {
@@ -98,13 +112,14 @@ const Nav = () => {
           to="/work"
           $isActive={isActive('/work') || isProject}
           $isProject={isProject}
+          $index={0}
         >
           work
         </NavLink>
-        <NavLink to="/about" $isActive={isActive('/about')}>
+        <NavLink to="/about" $isActive={isActive('/about')} $index={1}>
           about
         </NavLink>
-        <NavLink to="/contact" $isActive={isActive('/contact')}>
+        <NavLink to="/contact" $isActive={isActive('/contact')} $index={2}>
           contact
         </NavLink>
       </NavLinks>
