@@ -22,7 +22,7 @@ const NavContainer = styled.nav`
 
 const STAGGER_DELAY = 0.1;
 
-const NavLink = styled(Link) <{
+const NavLink = styled(Link)<{
   $isActive: boolean;
   $isProject?: boolean;
   $index?: number;

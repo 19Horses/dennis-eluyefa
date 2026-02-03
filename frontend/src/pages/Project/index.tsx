@@ -75,10 +75,7 @@ export default function Project() {
               <Slide key={img._key} $count={count}>
                 <SlideImageContainer>
                   {img.asset?.url && (
-                    <SlideImage
-                      src={img.asset.url}
-                      alt={data?.title ?? ''}
-                    />
+                    <SlideImage src={img.asset.url} alt={data?.title ?? ''} />
                   )}
                 </SlideImageContainer>
                 {index === 0 && (
