@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import Sketch from 'react-p5';
 import type p5Types from 'p5';
+import usePreloadQueries from '../queries/usePreloadQueries';
 
 type SplashScreenProps = {
   onComplete: () => void;
@@ -24,6 +25,8 @@ const COLORS = ['#FFFFFF', '#F000B6', '#00E5FF', '#FFB800', '#9B5DE5'];
 const BACKGROUND = '#000000';
 
 export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
+  usePreloadQueries()
+
   const fontUrl = useMemo(
     () => new URL('../assets/HelveticaNeue-Bold.otf', import.meta.url).href,
     []
@@ -99,7 +102,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
 
     initializeLetters(p5);
     lastRevealAtRef.current = p5.millis();
-    revealedCountRef.current = 1;
+    revealedCountRef.current = 0;
   };
 
   const draw = (p5: p5Types) => {
