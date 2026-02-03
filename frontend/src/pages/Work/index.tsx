@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router';
-import Layout from '../../components/Layout';
 import { Loading } from '../../components/Loading';
 import { useGetProjects } from '../../queries/useGetProjects';
 import {
@@ -18,31 +17,25 @@ function Work() {
   }
 
   if (isError) {
-    return (
-      <Layout>
-        <p>Error!</p>
-      </Layout>
-    );
+    return <p>Error!</p>;
   }
 
   return (
-    <Layout>
-      <WorkContainer>
-        {data?.map((project, index) => (
-          <ProjectCard
-            key={project._id}
-            $index={index}
-            onClick={() => navigate(`/work/${project.slug.current}`)}
-          >
-            <ProjectImage
-              src={project.images[0].asset?.url}
-              alt={project.title}
-            />
-            <ProjectTitle>{project.title}</ProjectTitle>
-          </ProjectCard>
-        ))}
-      </WorkContainer>
-    </Layout>
+    <WorkContainer>
+      {data?.map((project, index) => (
+        <ProjectCard
+          key={project._id}
+          $index={index}
+          onClick={() => navigate(`/work/${project.slug.current}`)}
+        >
+          <ProjectImage
+            src={project.images[0].asset?.url}
+            alt={project.title}
+          />
+          <ProjectTitle>{project.title}</ProjectTitle>
+        </ProjectCard>
+      ))}
+    </WorkContainer>
   );
 }
 

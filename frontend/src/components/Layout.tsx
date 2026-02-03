@@ -1,6 +1,7 @@
+import { Outlet } from 'react-router';
+import { styled } from 'styled-components';
 import { COLORS } from '../constants';
 import Nav from './Nav';
-import { styled } from 'styled-components';
 
 const LayoutContainer = styled.div`
   display: flex;
@@ -23,11 +24,13 @@ const LayoutContent = styled.div`
   overflow: auto;
 `;
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = () => {
   return (
     <LayoutContainer>
       <Nav />
-      <LayoutContent>{children}</LayoutContent>
+      <LayoutContent>
+        <Outlet />
+      </LayoutContent>
     </LayoutContainer>
   );
 };

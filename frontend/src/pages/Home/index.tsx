@@ -1,4 +1,3 @@
-import Layout from '../../components/Layout';
 import { COLORS } from '../../constants';
 import { useGetLanding } from '../../queries/useGetLanding';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -96,27 +95,25 @@ function Home() {
   }
 
   return (
-    <Layout>
-      <HomeContainer
-        onMouseDown={() => setIsMouseDown(true)}
-        onMouseUp={() => setIsMouseDown(false)}
-        onMouseLeave={() => setIsMouseDown(false)}
-      >
-        <HomeTitle>{data?.title}</HomeTitle>
-        {imageUrls.map((url, idx) => (
-          <HomeImage
-            key={url}
-            src={url}
-            alt="Home"
-            $isActive={idx === activeIndex}
-          />
-        ))}
-        <ImageOverlay
-          onMouseOver={() => setIsMouseOver(true)}
-          onMouseLeave={() => setIsMouseOver(false)}
+    <HomeContainer
+      onMouseDown={() => setIsMouseDown(true)}
+      onMouseUp={() => setIsMouseDown(false)}
+      onMouseLeave={() => setIsMouseDown(false)}
+    >
+      <HomeTitle>{data?.title}</HomeTitle>
+      {imageUrls.map((url, idx) => (
+        <HomeImage
+          key={url}
+          src={url}
+          alt="Home"
+          $isActive={idx === activeIndex}
         />
-      </HomeContainer>
-    </Layout>
+      ))}
+      <ImageOverlay
+        onMouseOver={() => setIsMouseOver(true)}
+        onMouseLeave={() => setIsMouseOver(false)}
+      />
+    </HomeContainer>
   );
 }
 
