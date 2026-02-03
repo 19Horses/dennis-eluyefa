@@ -7,6 +7,7 @@ export const ProjectContainer = styled.div`
   height: 100%;
   min-height: 0;
   overflow: hidden;
+  padding: 0.5rem;
   position: relative;
   animation: ${fadeIn} 0.5s ease forwards;
 `;

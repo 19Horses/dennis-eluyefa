@@ -23,7 +23,7 @@ export default function Project() {
   const { data, isLoading, isError } = useGetProject(slug ?? '');
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const images = [...(data?.images ?? []), ...(data?.images ?? []), ...(data?.images ?? []), ...(data?.images ?? []), ...(data?.images ?? []), ...(data?.images ?? [])];
+  const images = data?.images ?? [];
   const count = images.length;
 
   useEffect(() => {
