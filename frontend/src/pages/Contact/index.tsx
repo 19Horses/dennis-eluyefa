@@ -14,10 +14,9 @@ function Contact() {
     <ContactContainer>
       <LeftSubtext>
         for all <Underline>business</Underline>,{' '}
-        <Underline>commission</Underline>,{' '}
-        <Underline>collaborative</Underline>, or otherwise{' '}
-        <Underline>professional</Underline> inquiries, please email:{' '}
-        <Email>{EMAIL}</Email>
+        <Underline>commission</Underline>, <Underline>collaborative</Underline>,
+        or otherwise <Underline>professional</Underline> inquiries, please
+        email: <Email>{EMAIL}</Email>
       </LeftSubtext>
       <ContactText>THANKS FOR STOPPING BY:)</ContactText>
       <RightSubtext>
