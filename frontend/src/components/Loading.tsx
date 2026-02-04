@@ -15,7 +15,5 @@ const LoadingText = styled.p`
 `;
 
 export const Loading = () => {
-  return (
-    <LoadingText>loading...</LoadingText>
-  );
+  return <LoadingText>loading...</LoadingText>;
 };
