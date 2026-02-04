@@ -1,5 +1,4 @@
 import { COLORS } from '../constants';
-import Layout from './Layout';
 import { styled } from 'styled-components';
 
 const LoadingText = styled.p`
@@ -16,9 +15,5 @@ const LoadingText = styled.p`
 `;
 
 export const Loading = () => {
-  return (
-    <Layout>
-      <LoadingText>loading...</LoadingText>
-    </Layout>
-  );
+  return <LoadingText>loading...</LoadingText>;
 };
