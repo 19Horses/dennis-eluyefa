@@ -11,16 +11,13 @@ type Letter = {
   char: string;
   x: number;
   y: number;
-  vx: number;
-  vy: number;
-  rotation: number;
-  rotationSpeed: number;
-  gravity: number;
+  opacity: number;
   colorIndex: number;
 };
 
 const TEXT = 'dennis eluyefa';
-const REVEAL_INTERVAL_MS = 100;
+const REVEAL_INTERVAL_MS = 125;
+const FADE_OUT_SPEED = 0.015;
 const COLORS = [
   '#d2261a',
   '#83b7ed',
@@ -45,7 +42,8 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   const textSizeRef = useRef<number>(64);
   const lastRevealAtRef = useRef<number>(0);
   const revealedCountRef = useRef<number>(0);
-  const droppingRef = useRef<boolean>(false);
+  const allRevealedAtRef = useRef<number>(0);
+  const fadingRef = useRef<boolean>(false);
   const doneRef = useRef<boolean>(false);
 
   const initializeLetters = (p5: p5Types) => {
@@ -74,11 +72,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         char,
         x: cursorX + charWidth / 2,
         y: centerY,
-        vx: 0,
-        vy: 0,
-        rotation: 0,
-        rotationSpeed: 0,
-        gravity: 0,
+        opacity: 1,
         colorIndex: Math.floor(p5.random(COLORS.length)),
       });
       cursorX += charWidth;
@@ -87,16 +81,8 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
     lettersRef.current = letters;
   };
 
-  const startDrop = (p5: p5Types) => {
-    lettersRef.current = lettersRef.current.map((letter) => ({
-      ...letter,
-      vx: p5.random(-1.5, 1.5),
-      vy: p5.random(-3, 0),
-      rotation: p5.random(-0.4, 0.4),
-      rotationSpeed: p5.random(-0.08, 0.08),
-      gravity: p5.random(0.2, 0.6),
-    }));
-    droppingRef.current = true;
+  const startFade = () => {
+    fadingRef.current = true;
   };
 
   const preload = (p5: p5Types) => {
@@ -120,7 +106,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(textSizeRef.current);
 
-    if (!droppingRef.current) {
+    if (!fadingRef.current) {
       const now = p5.millis();
       if (
         revealedCountRef.current < lettersRef.current.length &&
@@ -129,29 +115,36 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         revealedCountRef.current += 1;
         lastRevealAtRef.current = now;
       }
-      if (revealedCountRef.current >= lettersRef.current.length) {
-        startDrop(p5);
+      if (
+        revealedCountRef.current >= lettersRef.current.length &&
+        allRevealedAtRef.current === 0
+      ) {
+        allRevealedAtRef.current = now;
+      }
+      if (
+        allRevealedAtRef.current > 0 &&
+        now - allRevealedAtRef.current >= REVEAL_INTERVAL_MS
+      ) {
+        startFade();
       }
     }
 
-    let allOffscreen = true;
+    let allFaded = true;
     lettersRef.current = lettersRef.current.map((letter, index) => {
-      if (droppingRef.current) {
-        letter.vy += letter.gravity;
-        letter.x += letter.vx;
-        letter.y += letter.vy;
-        letter.rotation += letter.rotationSpeed;
+      if (fadingRef.current) {
+        letter.opacity = Math.max(0, letter.opacity - FADE_OUT_SPEED);
       }
 
-      const beyondBottom =
-        letter.y - textSizeRef.current > p5.height + textSizeRef.current;
-      allOffscreen = allOffscreen && beyondBottom;
+      if (letter.opacity > 0) {
+        allFaded = false;
+      }
 
       if (index < revealedCountRef.current) {
         p5.push();
         p5.translate(letter.x, letter.y);
-        p5.rotate(letter.rotation);
-        p5.fill(COLORS[letter.colorIndex]);
+        const color = p5.color(COLORS[letter.colorIndex]);
+        color.setAlpha(letter.opacity * 255);
+        p5.fill(color);
         p5.text(letter.char, 0, 0);
         p5.pop();
       }
@@ -159,7 +152,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       return letter;
     });
 
-    if (droppingRef.current && allOffscreen && !doneRef.current) {
+    if (fadingRef.current && allFaded && !doneRef.current) {
       doneRef.current = true;
       p5.noLoop();
       onComplete();
@@ -168,7 +161,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
 
   const windowResized = (p5: p5Types) => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
-    if (!droppingRef.current) {
+    if (!fadingRef.current) {
       initializeLetters(p5);
       revealedCountRef.current = Math.min(
         revealedCountRef.current,
