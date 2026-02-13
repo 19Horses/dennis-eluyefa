@@ -1,0 +1,190 @@
+import { useMemo, useRef } from 'react';
+import Sketch from 'react-p5';
+import type p5Types from 'p5';
+import usePreloadQueries from '../queries/usePreloadQueries';
+
+type SplashScreenProps = {
+  onComplete: () => void;
+};
+
+type Letter = {
+  char: string;
+  x: number;
+  y: number;
+  opacity: number;
+  colorIndex: number;
+};
+
+const TEXT = 'dennis eluyefa';
+const REVEAL_INTERVAL_MS = 125;
+const FADE_OUT_SPEED = 0.015;
+const COLORS = [
+  '#d2261a',
+  '#83b7ed',
+  '#60d521',
+  '#efe026',
+  '#9f2ade',
+  '#FFFFFF',
+  '#F000B6',
+  '#7c4812',
+];
+const BACKGROUND = '#000000';
+
+export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
+  usePreloadQueries();
+
+  const fontUrl = useMemo(
+    () => new URL('../assets/HelveticaNeue-Bold.otf', import.meta.url).href,
+    []
+  );
+  const fontRef = useRef<p5Types.Font | null>(null);
+  const lettersRef = useRef<Letter[]>([]);
+  const textSizeRef = useRef<number>(64);
+  const lastRevealAtRef = useRef<number>(0);
+  const revealedCountRef = useRef<number>(0);
+  const allRevealedAtRef = useRef<number>(0);
+  const fadingRef = useRef<boolean>(false);
+  const doneRef = useRef<boolean>(false);
+
+  const initializeLetters = (p5: p5Types) => {
+    const size = Math.max(32, Math.min(p5.width * 0.08, 96));
+    textSizeRef.current = size;
+    p5.textSize(size);
+    p5.textAlign(p5.LEFT, p5.CENTER);
+
+    let totalWidth = 0;
+    for (const char of TEXT) {
+      totalWidth += p5.textWidth(char);
+    }
+
+    const startX = (p5.width - totalWidth) / 2;
+    const centerY = p5.height / 2;
+    let cursorX = startX;
+
+    const letters: Letter[] = [];
+    for (const char of TEXT) {
+      const charWidth = p5.textWidth(char);
+      if (char === ' ') {
+        cursorX += charWidth;
+        continue;
+      }
+      letters.push({
+        char,
+        x: cursorX + charWidth / 2,
+        y: centerY,
+        opacity: 1,
+        colorIndex: Math.floor(p5.random(COLORS.length)),
+      });
+      cursorX += charWidth;
+    }
+
+    lettersRef.current = letters;
+  };
+
+  const startFade = () => {
+    fadingRef.current = true;
+  };
+
+  const preload = (p5: p5Types) => {
+    fontRef.current = p5.loadFont(fontUrl) as unknown as p5Types.Font;
+  };
+
+  const setup = (p5: p5Types, canvasParentRef: Element) => {
+    p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
+    p5.textFont(fontRef.current ?? 'sans-serif');
+    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.noStroke();
+
+    initializeLetters(p5);
+    lastRevealAtRef.current = p5.millis();
+    revealedCountRef.current = 0;
+  };
+
+  const draw = (p5: p5Types) => {
+    p5.background(BACKGROUND);
+    p5.textFont(fontRef.current ?? 'sans-serif');
+    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.textSize(textSizeRef.current);
+
+    if (!fadingRef.current) {
+      const now = p5.millis();
+      if (
+        revealedCountRef.current < lettersRef.current.length &&
+        now - lastRevealAtRef.current >= REVEAL_INTERVAL_MS
+      ) {
+        revealedCountRef.current += 1;
+        lastRevealAtRef.current = now;
+      }
+      if (
+        revealedCountRef.current >= lettersRef.current.length &&
+        allRevealedAtRef.current === 0
+      ) {
+        allRevealedAtRef.current = now;
+      }
+      if (
+        allRevealedAtRef.current > 0 &&
+        now - allRevealedAtRef.current >= REVEAL_INTERVAL_MS
+      ) {
+        startFade();
+      }
+    }
+
+    let allFaded = true;
+    lettersRef.current = lettersRef.current.map((letter, index) => {
+      if (fadingRef.current) {
+        letter.opacity = Math.max(0, letter.opacity - FADE_OUT_SPEED);
+      }
+
+      if (letter.opacity > 0) {
+        allFaded = false;
+      }
+
+      if (index < revealedCountRef.current) {
+        p5.push();
+        p5.translate(letter.x, letter.y);
+        const color = p5.color(COLORS[letter.colorIndex]);
+        color.setAlpha(letter.opacity * 255);
+        p5.fill(color);
+        p5.text(letter.char, 0, 0);
+        p5.pop();
+      }
+
+      return letter;
+    });
+
+    if (fadingRef.current && allFaded && !doneRef.current) {
+      doneRef.current = true;
+      p5.noLoop();
+      onComplete();
+    }
+  };
+
+  const windowResized = (p5: p5Types) => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+    if (!fadingRef.current) {
+      initializeLetters(p5);
+      revealedCountRef.current = Math.min(
+        revealedCountRef.current,
+        lettersRef.current.length
+      );
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        backgroundColor: BACKGROUND,
+      }}
+    >
+      <Sketch
+        preload={preload}
+        setup={setup}
+        draw={draw}
+        windowResized={windowResized}
+      />
+    </div>
+  );
+};
