@@ -55,7 +55,6 @@ export const QuoteContainer = styled.div`
   align-items: center;
   justify-content: center;
   background-color: ${COLORS.primary};
-  padding: 1rem;
   box-sizing: border-box;
   animation: ${fadeIn} 0.6s ease-out 0.15s both;
 
@@ -82,10 +81,22 @@ export const ImageContainer = styled.div`
   }
 `;
 
+export const ImageOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: ${COLORS.primary};
+  opacity: 0.3;
+  z-index: 1;
+`;
+
 export const BeAboutImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: -1;
 
   &::selection {
     background-color: transparent;
@@ -94,21 +105,19 @@ export const BeAboutImage = styled.img`
 
 export const BioText = styled.p`
   font-family: 'Helvetica Neue Medium', sans-serif;
-  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  font-size: clamp(1.2rem, 1.6vw, 1rem);
   color: ${COLORS.secondary};
-  text-align: center;
+  text-align: justify;
   text-justify: inter-word;
-  width: 100%;
-  text-align: center;
-  font-style: italic;
   margin: 0;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  text-align: center;
   padding: 0.8rem;
+  line-height: 1.3;
   box-sizing: border-box;
+  z-index: 2;
 
   &::selection {
     background-color: ${COLORS.secondary};

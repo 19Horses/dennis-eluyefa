@@ -1,6 +1,7 @@
 import { useGetAbout } from '../../queries/useGetAbout';
 import { useGetClients } from '../../queries/useGetClients';
 import { Loading } from '../../components/Loading';
+import { AnimatedQuote } from '../../components/AnimatedQuote';
 import {
   AboutContainer,
   BeAboutImage,
@@ -10,8 +11,8 @@ import {
   ClientsList,
   ClientText,
   ImageContainer,
+  ImageOverlay,
   QuoteContainer,
-  QuoteText,
 } from './styles';
 
 function About() {
@@ -31,14 +32,16 @@ function About() {
   return (
     <AboutContainer>
       <QuoteContainer>
-        {aboutData?.quote ? (
-          <QuoteText>“{aboutData.quote}”</QuoteText>
-        ) : (
-          <QuoteText>“i just want to create images full of life.”</QuoteText>
-        )}
+        <AnimatedQuote
+          quote={
+            `“${aboutData?.quote}”` ||
+            '“i just want to create images full of life.”'
+          }
+        />
       </QuoteContainer>
       <ImageContainer>
         <BeAboutImage src={aboutData?.image?.asset?.url} alt="About" />
+        <ImageOverlay />
         <BioText>{aboutData?.bio}</BioText>
       </ImageContainer>
       <ClientContainer>
