@@ -53,15 +53,25 @@ const Footer = () => {
   return (
     <FooterContainer>
       <SocialLinks>
-        <SocialLink href="https://www.instagram.com/denden_man/" target="_blank" rel="noopener noreferrer">
+        <SocialLink
+          href="https://www.instagram.com/denden_man/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           instagram
         </SocialLink>
         <Separator>|</Separator>
-        <SocialLink href="https://www.tiktok.com/@denden_man" target="_blank" rel="noopener noreferrer">
+        <SocialLink
+          href="https://www.tiktok.com/@denden_man"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           tiktok
         </SocialLink>
       </SocialLinks>
-      <Copyright>© Dennis Eluyefa {new Date().getFullYear()}. All rights reserved.</Copyright>
+      <Copyright>
+        © Dennis Eluyefa {new Date().getFullYear()}. All rights reserved.
+      </Copyright>
     </FooterContainer>
   );
 };
