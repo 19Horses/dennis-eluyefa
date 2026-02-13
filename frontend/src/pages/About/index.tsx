@@ -11,6 +11,7 @@ import {
   ClientsList,
   ClientText,
   ImageContainer,
+  ImageOverlay,
   QuoteContainer,
 } from './styles';
 
@@ -39,6 +40,7 @@ function About() {
       </QuoteContainer>
       <ImageContainer>
         <BeAboutImage src={aboutData?.image?.asset?.url} alt="About" />
+        <ImageOverlay />
         <BioText>{aboutData?.bio}</BioText>
       </ImageContainer>
       <ClientContainer>

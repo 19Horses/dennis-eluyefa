@@ -202,7 +202,6 @@ export const AnimatedQuote = ({ quote }: AnimatedQuoteProps) => {
   const draw = (p5: p5Types) => {
     p5.background(BACKGROUND);
 
-
     if (!isInitializedRef.current && p5.width > 0 && p5.height > 0) {
       p5.textFont(fontRef.current ?? 'sans-serif');
       p5.textAlign(p5.LEFT, p5.TOP);
@@ -262,7 +261,7 @@ export const AnimatedQuote = ({ quote }: AnimatedQuoteProps) => {
   return (
     <div
       ref={containerRef}
-      style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0' }}
     >
       <Sketch
         preload={preload}
