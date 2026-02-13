@@ -31,7 +31,7 @@ const COLORS = [
 const BACKGROUND = '#000000';
 
 export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
-  usePreloadQueries()
+  usePreloadQueries();
 
   const fontUrl = useMemo(
     () => new URL('../assets/HelveticaNeue-Bold.otf', import.meta.url).href,
