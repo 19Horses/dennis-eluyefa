@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router';
+import { Outlet } from 'react-router';
 import { styled } from 'styled-components';
 import { COLORS } from '../constants';
 import Footer from './Footer';
@@ -26,16 +26,13 @@ const LayoutContent = styled.div`
 `;
 
 const Layout = () => {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
-
   return (
     <LayoutContainer>
       <Nav />
       <LayoutContent>
         <Outlet />
       </LayoutContent>
-      {!isHomePage && <Footer />}
+      <Footer />
     </LayoutContainer>
   );
 };
