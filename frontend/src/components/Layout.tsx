@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router';
 import { styled } from 'styled-components';
 import { COLORS } from '../constants';
+import Footer from './Footer';
 import Nav from './Nav';
 
 const LayoutContainer = styled.div`
@@ -31,6 +32,7 @@ const Layout = () => {
       <LayoutContent>
         <Outlet />
       </LayoutContent>
+      <Footer />
     </LayoutContainer>
   );
 };
