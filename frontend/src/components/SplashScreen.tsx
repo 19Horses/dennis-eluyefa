@@ -21,7 +21,16 @@ type Letter = {
 
 const TEXT = 'dennis eluyefa';
 const REVEAL_INTERVAL_MS = 100;
-const COLORS = ['#FFFFFF', '#F000B6', '#00E5FF', '#FFB800', '#9B5DE5'];
+const COLORS = [
+  '#d2261a',
+  '#83b7ed',
+  '#60d521',
+  '#efe026',
+  '#9f2ade',
+  '#FFFFFF',
+  '#F000B6',
+  '#7c4812',
+];
 const BACKGROUND = '#000000';
 
 export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
