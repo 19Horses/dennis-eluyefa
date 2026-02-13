@@ -34,7 +34,8 @@ function About() {
       <QuoteContainer>
         <AnimatedQuote
           quote={
-            `“${aboutData?.quote}”` || '“i just want to create images full of life.”'
+            `“${aboutData?.quote}”` ||
+            '“i just want to create images full of life.”'
           }
         />
       </QuoteContainer>

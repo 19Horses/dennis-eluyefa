@@ -16,7 +16,6 @@ type Letter = {
 
 const REVEAL_INTERVAL_MS = 50;
 
-
 const COLORS = {
   white: '#FFFFFF',
   pink: '#F000B6',
@@ -29,32 +28,32 @@ const COLORS = {
 };
 
 const LETTER_COLOR_SEQUENCE = [
-  COLORS.white,  // i
-  COLORS.pink,   // j
-  COLORS.blue,   // u
-  COLORS.green,  // s
+  COLORS.white, // i
+  COLORS.pink, // j
+  COLORS.blue, // u
+  COLORS.green, // s
   COLORS.purple, // t
   COLORS.yellow, // w
-  COLORS.green,  // a
-  COLORS.red,    // n
-  COLORS.white,  // t
-  COLORS.pink,   // t
-  COLORS.brown,  // o
+  COLORS.green, // a
+  COLORS.red, // n
+  COLORS.white, // t
+  COLORS.pink, // t
+  COLORS.brown, // o
   COLORS.purple, // c
-  COLORS.red,    // r
-  COLORS.blue,   // e
+  COLORS.red, // r
+  COLORS.blue, // e
   COLORS.yellow, // a
-  COLORS.white,  // t
-  COLORS.pink,   // e
-  COLORS.white,  // i
-  COLORS.green,  // m
-  COLORS.blue,   // a
-  COLORS.brown,  // g
+  COLORS.white, // t
+  COLORS.pink, // e
+  COLORS.white, // i
+  COLORS.green, // m
+  COLORS.blue, // a
+  COLORS.brown, // g
   COLORS.yellow, // e
-  COLORS.red,    // s
-  COLORS.blue,   // f
-  COLORS.green,  // u
-  COLORS.pink,   // l
+  COLORS.red, // s
+  COLORS.blue, // f
+  COLORS.green, // u
+  COLORS.pink, // l
   COLORS.yellow, // l
   COLORS.purple, // (extra colors if needed)
   COLORS.white,
@@ -122,14 +121,21 @@ export const AnimatedQuote = ({ quote }: AnimatedQuoteProps) => {
         const charWidth = p5.textWidth(char);
         let color: string;
 
-        if (char === '“' || char === '”' || char === '"' || char === '"' || char === '"') {
+        if (
+          char === '“' ||
+          char === '”' ||
+          char === '"' ||
+          char === '"' ||
+          char === '"'
+        ) {
           color = COLORS.white;
         } else if (char === '.' || char === '!' || char === '?') {
           color = COLORS.yellow;
         } else if (char === ' ') {
           color = COLORS.white;
         } else {
-          color = LETTER_COLOR_SEQUENCE[letterIndex % LETTER_COLOR_SEQUENCE.length];
+          color =
+            LETTER_COLOR_SEQUENCE[letterIndex % LETTER_COLOR_SEQUENCE.length];
           letterIndex++;
         }
 
@@ -261,7 +267,15 @@ export const AnimatedQuote = ({ quote }: AnimatedQuoteProps) => {
   return (
     <div
       ref={containerRef}
-      style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0' }}
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0',
+      }}
     >
       <Sketch
         preload={preload}
