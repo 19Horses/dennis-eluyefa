@@ -2,6 +2,43 @@ import { styled } from 'styled-components';
 import { COLORS } from '../../constants';
 import { fadeIn } from '../../../styles/animations';
 
+export const WorkWrapper = styled.div<{
+  $fadeTop: number;
+  $fadeBottom: number;
+}>`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.3s ease, height 0.3s ease;
+  }
+
+  &::before {
+    top: 0;
+    background: linear-gradient(to bottom, ${COLORS.primary}, transparent);
+    opacity: ${({ $fadeTop }) => $fadeTop / 1.4};
+    height: ${({ $fadeTop }) => $fadeTop * 6}%;
+    border-radius: 10px;
+  }
+
+  &::after {
+    bottom: 0;
+    background: linear-gradient(to top, ${COLORS.primary}, transparent);
+    opacity: ${({ $fadeBottom }) => $fadeBottom / 1.4};
+    height: ${({ $fadeBottom }) => $fadeBottom * 6}%;
+    border-radius: 10px;
+  }
+`;
+
 export const WorkContainer = styled.div`
   width: 100%;
   height: 100%;
