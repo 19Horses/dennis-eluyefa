@@ -9,9 +9,10 @@ const NavContainer = styled.nav`
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
-  padding: clamp(0.5rem, 2vw, 0.2rem) clamp(0.75rem, 3vw, 1.5rem);
+  padding: clamp(0.5rem, 1.5vw, 0.2rem) clamp(0.75rem, 3vw, 1.5rem);
   padding-left: 0;
   width: 100%;
+  height: 10%;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -22,7 +23,7 @@ const NavContainer = styled.nav`
 
 const STAGGER_DELAY = 0.1;
 
-const NavLink = styled(Link)<{
+const NavLink = styled(Link) <{
   $isActive: boolean;
   $isProject?: boolean;
   $index?: number;
@@ -33,7 +34,7 @@ const NavLink = styled(Link)<{
   font-weight: bold;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0.5)};
   transition: opacity 0.3s ease, color 0.3s ease;
-  font-size: clamp(2.25rem, 6vw, 4.75rem); /* 36px → 76px */
+  font-size: clamp(2rem, 5vw, 4rem);
   line-height: 1;
   max-width: 100%;
   overflow-wrap: anywhere;
@@ -55,7 +56,7 @@ const NavLinks = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: clamp(1.5rem, 6vw, 8rem);
+  gap: clamp(1rem, 5vw, 6.5rem);
 
   @media (max-width: 768px) {
     width: 100%;
@@ -69,7 +70,7 @@ const NavLinks = styled.div`
 
 const Logo = styled.img`
   object-fit: contain;
-  width: clamp(160px, 22vw, 300px);
+  width: clamp(130px, 19vw, 250px);
   height: auto;
   max-width: 100%;
   opacity: 0;
