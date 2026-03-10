@@ -24,8 +24,7 @@ function Work() {
     const ramp = 10;
     const min = 0.25;
     const distTop = el.scrollTop;
-    const distBottom =
-      el.scrollHeight - el.scrollTop - el.clientHeight;
+    const distBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
 
     const intensity = (dist: number) =>
       Math.min(1, min + ((1 - min) * Math.min(dist, ramp)) / ramp);
