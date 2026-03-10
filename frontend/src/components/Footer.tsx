@@ -1,5 +1,6 @@
 import { styled } from 'styled-components';
 import { fadeIn } from '../../styles/animations';
+import { COLORS } from '../constants';
 
 const FooterContainer = styled.footer`
   width: 100%;
@@ -34,11 +35,21 @@ const SocialLink = styled.a`
   &:hover {
     opacity: 0.6;
   }
+
+  &::selection {
+    background-color: ${COLORS.primary};
+    color: ${COLORS.secondary};
+  }
 `;
 
 const Separator = styled.span`
   color: black;
   font-size: 1.2rem;
+
+  &::selection {
+    background-color: ${COLORS.primary};
+    color: ${COLORS.secondary};
+  }
 `;
 
 const Copyright = styled.p`
@@ -47,6 +58,11 @@ const Copyright = styled.p`
   color: black;
   font-weight: bold;
   margin: 0;
+
+  &::selection {
+    background-color: ${COLORS.primary};
+    color: ${COLORS.secondary};
+  }
 `;
 
 const Footer = () => {
