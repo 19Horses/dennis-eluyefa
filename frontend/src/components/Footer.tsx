@@ -12,6 +12,7 @@ const FooterContainer = styled.footer`
   position: relative;
   flex-shrink: 0;
   animation: ${fadeIn} 0.6s ease-out;
+  box-sizing: border-box;
 `;
 
 const SocialLinks = styled.div`

@@ -10,19 +10,21 @@ const LayoutContainer = styled.div`
   width: 100%;
   height: 100dvh;
   min-height: 100vh;
-  overflow: hidden;
+  box-sizing: border-box;
 `;
 
 const LayoutContent = styled.div`
   width: 100%;
+  min-height: 90%;
+  height: 90%;
   flex: 1 1 auto;
-  min-height: 0;
   background-color: ${COLORS.primary};
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: auto;
+  box-sizing: border-box;
 `;
 
 const Layout = () => {

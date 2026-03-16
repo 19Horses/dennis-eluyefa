@@ -13,6 +13,9 @@ const NavContainer = styled.nav`
   padding-left: 0;
   width: 100%;
   height: 10%;
+  min-height: 10%;
+  max-height: 10%;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     flex-direction: column;
