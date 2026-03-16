@@ -20,6 +20,29 @@ export const AboutContainer = styled.div`
   }
 `;
 
+export const ClientText = styled.p<{ $delay?: number }>`
+  font-family: 'Helvetica Neue Medium', sans-serif;
+  font-size: clamp(0.9rem, 1.6vw, 1.2rem);
+  color: ${COLORS.tertiary};
+  text-align: right;
+  font-style: italic;
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  transition: color 0.3s ease-in-out;
+  animation: ${fadeIn} 0.5s ease-out
+    ${({ $delay = 0 }) => $delay * CLIENT_ANIMATION_DELAY_STEP}s both;
+
+  &::selection {
+    background-color: ${COLORS.tertiary};
+    color: ${COLORS.secondary};
+  }
+
+  @media (max-width: 768px) {
+    text-align: center;
+  }
+`;
+
 export const ClientContainer = styled.div`
   flex: 0 1 clamp(180px, 20vw, 260px);
   min-width: 0;
@@ -35,6 +58,7 @@ export const ClientContainer = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   animation: ${fadeIn} 0.6s ease-out 0.45s both;
+  transition: all 0.3s ease-in-out;
 
   @media (max-width: 768px) {
     flex: 0 0 auto;
@@ -42,6 +66,19 @@ export const ClientContainer = styled.div`
     min-width: 0;
     align-items: center;
     padding: 0.9rem 0.8rem;
+  }
+
+  &:hover {
+    background-color: ${COLORS.tertiary};
+  }
+
+  &:hover ${ClientText} {
+    color: ${COLORS.secondary};
+
+    &::selection {
+      background-color: ${COLORS.secondary};
+      color: ${COLORS.tertiary};
+    }
   }
 `;
 
@@ -153,28 +190,6 @@ export const QuoteText = styled.p`
 `;
 
 const CLIENT_ANIMATION_DELAY_STEP = 0.05;
-
-export const ClientText = styled.p<{ $delay?: number }>`
-  font-family: 'Helvetica Neue Medium', sans-serif;
-  font-size: clamp(0.9rem, 1.6vw, 1.2rem);
-  color: ${COLORS.tertiary};
-  text-align: right;
-  font-style: italic;
-  margin: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  animation: ${fadeIn} 0.5s ease-out
-    ${({ $delay = 0 }) => $delay * CLIENT_ANIMATION_DELAY_STEP}s both;
-
-  &::selection {
-    background-color: ${COLORS.tertiary};
-    color: ${COLORS.secondary};
-  }
-
-  @media (max-width: 768px) {
-    text-align: center;
-  }
-`;
 
 export const ClientHeading = styled(ClientText)`
   text-decoration: underline;
