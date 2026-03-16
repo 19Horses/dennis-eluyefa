@@ -1527,7 +1527,7 @@ void main(){
   }
 `,Xi=pt.span`
   text-decoration: underline;
-`,Fy="contact@denniseluyefa.com";function Hk(){return pr(Bk,{children:[pr(zk,{children:["for all ",rt(Xi,{children:"business"}),","," ",rt(Xi,{children:"commission"}),", ",rt(Xi,{children:"collaborative"}),", or otherwise ",rt(Xi,{children:"professional"})," inquiries, please email: ",rt(Dy,{children:Fy})]}),rt(Gk,{children:"THANKS FOR STOPPING BY:)"}),pr(Vk,{children:["if there are images on this website you wish to purchase as a"," ",rt(Xi,{children:"print"})," :), please contact: ",rt(Dy,{children:Fy})," ","with your specifications."]})]})}const Wk=pt.div`
+`,Fy="contact@denniseluyefa.com";function Hk(){return pr(Bk,{children:[pr(zk,{children:["for all ",rt(Xi,{children:"business"}),","," ",rt(Xi,{children:"commission"}),", ",rt(Xi,{children:"collaborative"}),", or otherwise ",rt(Xi,{children:"professional"})," inquiries, please email: ",rt(Dy,{children:Fy})]}),rt(Gk,{children:"THANKS FOR STOPPING BY :)"}),pr(Vk,{children:["if there are images on this website you wish to purchase as a"," ",rt(Xi,{children:"print"}),", please contact: ",rt(Dy,{children:Fy})," ","with your specifications."]})]})}const Wk=pt.div`
   width: 100%;
   height: 100%;
   display: flex;
