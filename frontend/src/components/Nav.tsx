@@ -13,6 +13,9 @@ const NavContainer = styled.nav`
   padding-left: 0;
   width: 100%;
   height: 10%;
+  min-height: 10%;
+  max-height: 10%;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -23,7 +26,7 @@ const NavContainer = styled.nav`
 
 const STAGGER_DELAY = 0.1;
 
-const NavLink = styled(Link)<{
+const NavLink = styled(Link) <{
   $isActive: boolean;
   $isProject?: boolean;
   $index?: number;
