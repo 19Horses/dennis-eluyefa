@@ -18,10 +18,10 @@ function Contact() {
         or otherwise <Underline>professional</Underline> inquiries, please
         email: <Email>{EMAIL}</Email>
       </LeftSubtext>
-      <ContactText>THANKS FOR STOPPING BY:)</ContactText>
+      <ContactText>THANKS FOR STOPPING BY :)</ContactText>
       <RightSubtext>
         if there are images on this website you wish to purchase as a{' '}
-        <Underline>print</Underline> :), please contact: <Email>{EMAIL}</Email>{' '}
+        <Underline>print</Underline>, please contact: <Email>{EMAIL}</Email>{' '}
         with your specifications.
       </RightSubtext>
     </ContactContainer>
