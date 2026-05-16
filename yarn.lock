@@ -2288,10 +2288,20 @@
   resolved "https://registry.yarnpkg.com/@noble/ed25519/-/ed25519-3.0.0.tgz#720d4cdb6b5f632e29164a7e9d5cdfeb82a7ac86"
   integrity sha512-QyteqMNm0GLqfa5SoYbSC3+Pvykwpn95Zgth4MFVSMKBB75ELl9tX1LAVsN4c3HXOrakHsF2gL4zWDAYCcsnzg==
 
+"@noble/ed25519@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@noble/ed25519/-/ed25519-3.1.0.tgz#f72f53c9ef2a3feebd59caee0bb5b2d4f766aa08"
+  integrity sha512-pfcObRY3CtvwfaG9Mt5XqZdKmAQppl37tHUeuBhDUbiwJBCVY4/A4lbMvb1xKhMDx96AqAqZpMWuBX1HulhX4g==
+
 "@noble/hashes@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-2.0.1.tgz#fc1a928061d1232b0a52bb754393c37a5216c89e"
   integrity sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==
+
+"@noble/hashes@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-2.2.0.tgz#22da1d16a469954fce877055d559900a6c73b63b"
+  integrity sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -3022,6 +3032,13 @@
   dependencies:
     "@sanity/signed-urls" "^2.0.1"
 
+"@sanity/image-url@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@sanity/image-url/-/image-url-2.1.1.tgz#58fc012e297e997792d94dc5f081424967c18aa7"
+  integrity sha512-qVXsF1teWR6FO3ZFAz46HDcRU+E6EQkpyncPnkGOzeJ1PgnaOiWMVbiSrZtX10s3txzzu/tAjKwbxbGHfDWgGw==
+  dependencies:
+    "@sanity/signed-urls" "^2.0.2"
+
 "@sanity/import@^4.0.4":
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@sanity/import/-/import-4.0.4.tgz#7b61c3172d6fd256ee42428ede0fd8c809f028b3"
@@ -3235,6 +3252,14 @@
   dependencies:
     "@noble/ed25519" "^3.0.0"
     "@noble/hashes" "^2.0.0"
+
+"@sanity/signed-urls@^2.0.2":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@sanity/signed-urls/-/signed-urls-2.0.4.tgz#3388e798b3a3de5e8d4111a1b2e198b1ca472571"
+  integrity sha512-wH7L9iOxQDVTa7COVEXoknalNgjpqxLJoOcZYQa3D/2JVEQOGUm82RgFVgZkKoclhQ8Y8dBby+KPkFoIDoUc1g==
+  dependencies:
+    "@noble/ed25519" "^3.1.0"
+    "@noble/hashes" "^2.2.0"
 
 "@sanity/telemetry@^0.8.0":
   version "0.8.1"

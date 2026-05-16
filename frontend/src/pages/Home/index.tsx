@@ -1,5 +1,6 @@
 import { COLORS } from '../../constants';
 import { useGetLanding } from '../../queries/useGetLanding';
+import { getSanityImageUrl, IMAGE_WIDTHS } from '../../sanityImage';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Loading } from '../../components/Loading';
 import { HomeContainer, HomeImage, HomeTitle, ImageOverlay } from './styles';
@@ -15,7 +16,9 @@ function Home() {
   const imageUrls = useMemo(() => {
     return (
       data?.images
-        ?.map((img) => img.asset?.url)
+        ?.map((img) =>
+          getSanityImageUrl(img, { width: IMAGE_WIDTHS.hero }),
+        )
         .filter((url): url is string => Boolean(url)) ?? []
     );
   }, [data?.images]);
