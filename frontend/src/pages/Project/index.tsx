@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useGetProject } from '../../queries/useGetProjects';
 import { formatDate } from '../../utils';
+import { getSanityImageUrl, IMAGE_WIDTHS } from '../../sanityImage';
 import { Loading } from '../../components/Loading';
 import {
   ProjectContainer,
@@ -67,21 +68,24 @@ export default function Project() {
             transform: `translateX(-${slideOffset}%)`,
           }}
         >
-          {images.map((img, index) => (
-            <Slide key={img._key} $count={count}>
-              <SlideImageContainer>
-                {img.asset?.url && (
-                  <SlideImage src={img.asset.url} alt={data?.title ?? ''} />
+          {images.map((img, index) => {
+            const src = getSanityImageUrl(img, {
+              width: IMAGE_WIDTHS.gallery,
+            });
+            return (
+              <Slide key={img._key} $count={count}>
+                <SlideImageContainer>
+                  {src && <SlideImage src={src} alt={data?.title ?? ''} />}
+                </SlideImageContainer>
+                {index === 0 && (
+                  <ProjectMeta>
+                    <ProjectTitle>{data?.title}</ProjectTitle>
+                    <ProjectDate>{formatDate(data?.date)}</ProjectDate>
+                  </ProjectMeta>
                 )}
-              </SlideImageContainer>
-              {index === 0 && (
-                <ProjectMeta>
-                  <ProjectTitle>{data?.title}</ProjectTitle>
-                  <ProjectDate>{formatDate(data?.date)}</ProjectDate>
-                </ProjectMeta>
-              )}
-            </Slide>
-          ))}
+              </Slide>
+            );
+          })}
         </SliderTrack>
       </SliderViewport>
 

@@ -2,13 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { getApiUrl } from '../sanityIntegration';
 import axios from 'axios';
 import { formatDate } from '../utils';
+import type { SanityImage } from '../sanityImage';
 
-export type ProjectImage = {
+export type ProjectImage = SanityImage & {
   _key: string;
-  asset?: {
-    _id: string;
-    url: string;
-  };
 };
 
 export type ProjectType = {
@@ -30,8 +27,7 @@ const query = `
     images[]{
       _key,
       asset->{
-        _id,
-        url
+        _id
       }
     }
   }

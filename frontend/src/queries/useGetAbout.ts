@@ -1,16 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { getApiUrl } from '../sanityIntegration';
+import type { SanityImage } from '../sanityImage';
 import axios from 'axios';
 
 export type AboutDoc = {
   _id: string;
   bio?: string;
-  image?: {
-    asset?: {
-      _id: string;
-      url: string;
-    };
-  };
+  image?: SanityImage;
   quote?: string;
 };
 
@@ -20,8 +16,7 @@ const query = `
     bio,
     image{
       asset->{
-        _id,
-        url
+        _id
       }
     },
     quote

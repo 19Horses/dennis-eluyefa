@@ -2,6 +2,7 @@ import { useGetAbout } from '../../queries/useGetAbout';
 import { useGetClients } from '../../queries/useGetClients';
 import { Loading } from '../../components/Loading';
 import { AnimatedQuote } from '../../components/AnimatedQuote';
+import { getSanityImageUrl, IMAGE_WIDTHS } from '../../sanityImage';
 import {
   AboutContainer,
   BeAboutImage,
@@ -40,7 +41,12 @@ function About() {
         />
       </QuoteContainer>
       <ImageContainer>
-        <BeAboutImage src={aboutData?.image?.asset?.url} alt="About" />
+        <BeAboutImage
+          src={getSanityImageUrl(aboutData?.image, {
+            width: IMAGE_WIDTHS.about,
+          })}
+          alt="About"
+        />
         <ImageOverlay />
         <BioText>{aboutData?.bio}</BioText>
       </ImageContainer>
