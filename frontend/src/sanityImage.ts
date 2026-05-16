@@ -34,7 +34,7 @@ export function urlFor(source: SanityImageSource) {
 
 export function getSanityImageUrl(
   source: SanityImageSource | undefined | null,
-  { width, quality = 80 }: SanityImageUrlOptions = {},
+  { width, quality = 80 }: SanityImageUrlOptions = {}
 ): string | undefined {
   if (!source) return undefined;
 

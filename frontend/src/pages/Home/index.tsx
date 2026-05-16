@@ -16,9 +16,7 @@ function Home() {
   const imageUrls = useMemo(() => {
     return (
       data?.images
-        ?.map((img) =>
-          getSanityImageUrl(img, { width: IMAGE_WIDTHS.hero }),
-        )
+        ?.map((img) => getSanityImageUrl(img, { width: IMAGE_WIDTHS.hero }))
         .filter((url): url is string => Boolean(url)) ?? []
     );
   }, [data?.images]);

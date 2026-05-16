@@ -73,19 +73,17 @@ export default function Project() {
               width: IMAGE_WIDTHS.gallery,
             });
             return (
-            <Slide key={img._key} $count={count}>
-              <SlideImageContainer>
-                {src && (
-                  <SlideImage src={src} alt={data?.title ?? ''} />
+              <Slide key={img._key} $count={count}>
+                <SlideImageContainer>
+                  {src && <SlideImage src={src} alt={data?.title ?? ''} />}
+                </SlideImageContainer>
+                {index === 0 && (
+                  <ProjectMeta>
+                    <ProjectTitle>{data?.title}</ProjectTitle>
+                    <ProjectDate>{formatDate(data?.date)}</ProjectDate>
+                  </ProjectMeta>
                 )}
-              </SlideImageContainer>
-              {index === 0 && (
-                <ProjectMeta>
-                  <ProjectTitle>{data?.title}</ProjectTitle>
-                  <ProjectDate>{formatDate(data?.date)}</ProjectDate>
-                </ProjectMeta>
-              )}
-            </Slide>
+              </Slide>
             );
           })}
         </SliderTrack>
