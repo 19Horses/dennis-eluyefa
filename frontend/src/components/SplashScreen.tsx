@@ -17,7 +17,7 @@ type Letter = {
 
 const TEXT = 'dennis eluyefa';
 const REVEAL_INTERVAL_MS = 125;
-const FADE_OUT_SPEED = 0.015;
+const FADE_OUT_SPEED = 0.03;
 const COLORS = [
   '#d2261a',
   '#83b7ed',
