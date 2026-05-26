@@ -14,22 +14,30 @@ const backgroundFadeFromBlack = keyframes`
 export const ContactContainer = styled.div`
   width: 100%;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: space-between;
   background-color: ${COLORS.tertiary};
   padding: 2rem;
+  overflow: hidden;
   animation: ${backgroundFadeFromBlack} 0.8s ease-out forwards;
+
+  @media (max-width: 768px) {
+    padding: clamp(1rem, 4vw, 1.5rem);
+    gap: 1rem;
+  }
 `;
 
 export const ContactText = styled.p`
   font-family: 'Helvetica Neue Bold', sans-serif;
-  font-size: 35px;
+  font-size: clamp(1.6rem, 5vw, 35px);
   color: ${COLORS.secondary};
   font-weight: bold;
   text-align: center;
   font-style: italic;
+  margin: 0;
   animation: ${fadeIn} 0.6s ease-out 0.3s both;
 
   &::selection {
@@ -40,12 +48,13 @@ export const ContactText = styled.p`
 
 export const ContactSubtext = styled.p`
   font-family: 'Helvetica Neue Bold', sans-serif;
-  font-size: 20px;
+  font-size: clamp(1rem, 3.2vw, 20px);
   color: ${COLORS.secondary};
   font-weight: bold;
   text-align: center;
   font-style: italic;
   width: 100%;
+  margin: 0;
 
   &::selection {
     background-color: ${COLORS.secondary};
