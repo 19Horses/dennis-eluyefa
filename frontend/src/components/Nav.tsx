@@ -4,6 +4,7 @@ import { styled } from 'styled-components';
 import { COLORS } from '../constants';
 import { fadeIn, fadeInPreserveOpacity } from '../../styles/animations';
 import logo from '../assets/logo.png';
+import Footer from './Footer';
 
 const NavContainer = styled.nav`
   display: flex;
@@ -115,13 +116,16 @@ const MobileOverlay = styled.div<{ $isOpen: boolean }>`
   inset: 0;
   background-color: rgba(0, 0, 0, 0.95);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 5rem 1.5rem 2rem;
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
   pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
   transition: opacity 0.35s ease, visibility 0.35s ease;
   z-index: 30;
+  box-sizing: border-box;
 
   @media (min-width: 769px) {
     display: none;
@@ -133,17 +137,23 @@ const MobileNavLinks = styled.div<{ $isOpen: boolean }>`
   flex-direction: column;
   align-items: center;
   gap: 1.2rem;
+  margin: auto 0;
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   transform: ${({ $isOpen }) =>
     $isOpen ? 'translateY(0)' : 'translateY(10px)'};
   transition: opacity 0.35s ease, transform 0.35s ease;
 `;
 
-const MobileNavLink = styled(Link)<{ $index: number; $isOpen: boolean }>`
+const MobileNavLink = styled(Link)<{
+  $index: number;
+  $isActive: boolean;
+  $isOpen: boolean;
+}>`
   font-family: 'Helvetica Neue Bold', sans-serif;
   text-decoration: none;
   text-transform: lowercase;
-  color: #fff;
+  color: ${({ $isActive }) =>
+    $isActive ? COLORS.tertiary : COLORS.secondary};
   font-size: clamp(2.2rem, 12vw, 3.8rem);
   line-height: 1;
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
@@ -154,7 +164,7 @@ const MobileNavLink = styled(Link)<{ $index: number; $isOpen: boolean }>`
     $isOpen ? `${0.08 + $index * 0.08}s` : '0s'};
 
   &:hover {
-    color: ${COLORS.secondary};
+    color: ${COLORS.tertiary};
   }
 `;
 
@@ -243,6 +253,7 @@ const Nav = () => {
           <MobileNavLink
             to="/work"
             $index={0}
+            $isActive={isActive('/work') || isProject}
             $isOpen={isMenuOpen}
             onClick={() => setIsMenuOpen(false)}
           >
@@ -251,6 +262,7 @@ const Nav = () => {
           <MobileNavLink
             to="/about"
             $index={1}
+            $isActive={isActive('/about')}
             $isOpen={isMenuOpen}
             onClick={() => setIsMenuOpen(false)}
           >
@@ -259,12 +271,14 @@ const Nav = () => {
           <MobileNavLink
             to="/contact"
             $index={2}
+            $isActive={isActive('/contact')}
             $isOpen={isMenuOpen}
             onClick={() => setIsMenuOpen(false)}
           >
             contact
           </MobileNavLink>
         </MobileNavLinks>
+        <Footer isMobileNav />
       </MobileOverlay>
     </NavContainer>
   );

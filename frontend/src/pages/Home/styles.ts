@@ -5,12 +5,18 @@ import { fadeIn } from '../../../styles/animations';
 export const HomeContainer = styled.div`
   width: 100%;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
   position: relative;
   padding: 2rem;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: clamp(1rem, 4vw, 1.5rem);
+  }
 `;
 
 export const HomeImage = styled.img<{ $isActive: boolean }>`
@@ -56,6 +62,7 @@ export const HomeTitle = styled.p`
   z-index: 2;
   text-align: left;
   transition: all 1s ease;
+  margin: 0;
 
   animation: ${fadeIn} 1s ease both;
 

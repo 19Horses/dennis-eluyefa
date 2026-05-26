@@ -2,24 +2,39 @@ import { styled } from 'styled-components';
 import { fadeIn } from '../../styles/animations';
 import { COLORS } from '../constants';
 
-const FooterContainer = styled.footer`
+type FooterProps = {
+  isMobileNav?: boolean;
+};
+
+const FooterContainer = styled.footer<{ $isMobileNav: boolean }>`
   width: 100%;
-  height: 10%;
-  background-color: white;
+  height: ${({ $isMobileNav }) => ($isMobileNav ? 'auto' : '10%')};
+  background-color: ${({ $isMobileNav }) =>
+    $isMobileNav ? COLORS.primary : COLORS.secondary};
+  color: ${({ $isMobileNav }) =>
+    $isMobileNav ? COLORS.secondary : COLORS.primary};
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  position: ${({ $isMobileNav }) => ($isMobileNav ? 'static' : 'relative')};
   flex-shrink: 0;
   animation: ${fadeIn} 0.6s ease-out;
   box-sizing: border-box;
+  padding: ${({ $isMobileNav }) => ($isMobileNav ? '1rem 0 0' : '0')};
+  gap: ${({ $isMobileNav }) => ($isMobileNav ? '0.8rem' : '0')};
+
+  @media (max-width: 768px) {
+    display: ${({ $isMobileNav }) => ($isMobileNav ? 'flex' : 'none')};
+    flex-direction: column;
+  }
 `;
 
-const SocialLinks = styled.div`
-  position: absolute;
-  left: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
+const SocialLinks = styled.div<{ $isMobileNav: boolean }>`
+  position: ${({ $isMobileNav }) => ($isMobileNav ? 'static' : 'absolute')};
+  left: ${({ $isMobileNav }) => ($isMobileNav ? 'auto' : '2rem')};
+  top: ${({ $isMobileNav }) => ($isMobileNav ? 'auto' : '50%')};
+  transform: ${({ $isMobileNav }) =>
+    $isMobileNav ? 'none' : 'translateY(-50%)'};
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -27,7 +42,7 @@ const SocialLinks = styled.div`
 
 const SocialLink = styled.a`
   font-family: 'Helvetica Neue', sans-serif;
-  color: black;
+  color: inherit;
   text-decoration: none;
   font-size: 1.2rem;
   cursor: pointer;
@@ -44,7 +59,7 @@ const SocialLink = styled.a`
 `;
 
 const Separator = styled.span`
-  color: black;
+  color: inherit;
   font-size: 1.2rem;
 
   &::selection {
@@ -53,12 +68,13 @@ const Separator = styled.span`
   }
 `;
 
-const Copyright = styled.p`
+const Copyright = styled.p<{ $isMobileNav: boolean }>`
   font-family: 'Helvetica Neue Bold', sans-serif;
-  font-size: 1.2rem;
-  color: black;
+  font-size: ${({ $isMobileNav }) => ($isMobileNav ? '0.75rem' : '1.2rem')};
+  color: inherit;
   font-weight: bold;
   margin: 0;
+  text-align: center;
 
   &::selection {
     background-color: ${COLORS.primary};
@@ -66,10 +82,10 @@ const Copyright = styled.p`
   }
 `;
 
-const Footer = () => {
+const Footer = ({ isMobileNav = false }: FooterProps) => {
   return (
-    <FooterContainer>
-      <SocialLinks>
+    <FooterContainer $isMobileNav={isMobileNav}>
+      <SocialLinks $isMobileNav={isMobileNav}>
         <SocialLink
           href="https://www.instagram.com/denden_man/"
           target="_blank"
@@ -86,7 +102,7 @@ const Footer = () => {
           tiktok
         </SocialLink>
       </SocialLinks>
-      <Copyright>
+      <Copyright $isMobileNav={isMobileNav}>
         © Dennis Eluyefa {new Date().getFullYear()}. All rights reserved.
       </Copyright>
     </FooterContainer>
