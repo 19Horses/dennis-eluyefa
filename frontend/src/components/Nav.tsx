@@ -95,9 +95,7 @@ const BurgerButton = styled.button<{ $isOpen: boolean }>`
     height: 2px;
     border-radius: 999px;
     background-color: ${({ $isOpen }) => ($isOpen ? '#fff' : '#000')};
-    transition:
-      transform 0.3s ease,
-      opacity 0.3s ease,
+    transition: transform 0.3s ease, opacity 0.3s ease,
       background-color 0.3s ease;
   }
 
@@ -151,10 +149,7 @@ const MobileNavLink = styled(Link)<{ $index: number; $isOpen: boolean }>`
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   transform: ${({ $isOpen }) =>
     $isOpen ? 'translateY(0)' : 'translateY(10px)'};
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease,
-    color 0.2s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease, color 0.2s ease;
   transition-delay: ${({ $isOpen, $index }) =>
     $isOpen ? `${0.08 + $index * 0.08}s` : '0s'};
 
