@@ -152,8 +152,7 @@ const MobileNavLink = styled(Link)<{
   font-family: 'Helvetica Neue Bold', sans-serif;
   text-decoration: none;
   text-transform: lowercase;
-  color: ${({ $isActive }) =>
-    $isActive ? COLORS.tertiary : COLORS.secondary};
+  color: ${({ $isActive }) => ($isActive ? COLORS.tertiary : COLORS.secondary)};
   font-size: clamp(2.2rem, 12vw, 3.8rem);
   line-height: 1;
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
