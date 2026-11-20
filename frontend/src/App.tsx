@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
-import { HashRouter, Route, Routes } from 'react-router';
+import { HashRouter, Navigate, Route, Routes } from 'react-router';
 import Layout from './components/Layout';
 import { SplashScreen } from './components/SplashScreen';
-import { About, Contact, Home, Project, Work } from './pages';
+import { About, Contact, Gallery, Home, Project, Work } from './pages';
 
 const queryClient = new QueryClient();
 
@@ -21,6 +21,9 @@ const App = () => {
               <Route path="work/:slug" element={<Project />} />
               <Route path="about" element={<About />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="gallery" element={<Gallery />} />
+              <Route path="home" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
         </HashRouter>

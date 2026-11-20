@@ -27,6 +27,7 @@ export const IMAGE_WIDTHS = {
   hero: 1800,
   grid: 600,
   gallery: 1440,
+  scatter: 480,
   about: 960,
 } as const;
 

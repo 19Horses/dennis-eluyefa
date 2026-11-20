@@ -21,11 +21,9 @@ export const HomeContainer = styled.div`
 
 export const HomeImage = styled.img<{ $isActive: boolean }>`
   position: absolute;
-  top: 0;
-  left: 0;
-  width: calc(100% - 16px);
-  height: calc(100% - 16px);
-  inset: 8px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   z-index: 0;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
