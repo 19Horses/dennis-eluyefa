@@ -9,20 +9,34 @@ export const AboutContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: row;
+  align-items: stretch;
   gap: 0.8rem;
-  padding: 0.8rem;
+  padding: 0.8rem 0.8rem 0;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow: hidden;
 
   @media (max-width: 768px) {
-    height: auto;
-    min-height: 0;
+    height: 100%;
     max-height: 100%;
+    min-height: 0;
     flex-direction: column;
+    flex-wrap: nowrap;
     justify-content: flex-start;
-    padding: 0.8rem 0.6rem;
-    overflow-y: auto;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
     overflow-x: hidden;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: auto;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
@@ -62,20 +76,27 @@ export const ClientContainer = styled.div`
   background-color: ${COLORS.secondary};
   box-sizing: border-box;
   padding: 0.8rem;
+  margin-bottom: 0.8rem;
   overflow-y: auto;
   overflow-x: hidden;
   animation: ${fadeIn} 0.6s ease-out 0.45s both;
   transition: all 0.3s ease-in-out;
 
   @media (max-width: 768px) {
-    flex: 0 0 auto;
+    flex: 0 0 100%;
     width: 100%;
-    height: auto;
-    min-height: 0;
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%;
     min-width: 0;
     align-items: center;
-    padding: 0.9rem 0.8rem;
-    overflow: visible;
+    justify-content: center;
+    padding: 1.5rem 1.1rem;
+    margin-bottom: 0;
+    overflow: hidden;
+    touch-action: pan-y;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
   &:hover {
@@ -96,20 +117,37 @@ export const QuoteContainer = styled.div`
   flex: 1 1 0;
   min-width: 0;
   max-width: 100%;
-  height: 100%;
+  align-self: stretch;
+  height: auto;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   background-color: ${COLORS.primary};
   box-sizing: border-box;
+  overflow: hidden;
   animation: ${fadeIn} 0.6s ease-out 0.15s both;
 
+  > * {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
   @media (max-width: 768px) {
-    flex: 0 0 auto;
-    height: clamp(10rem, 32vh, 16rem);
-    padding: 1.2rem 1rem;
+    flex: 0 0 100%;
+    align-self: auto;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%;
+    padding: 1.5rem 1.1rem;
     min-width: 0;
+    touch-action: pan-y;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 `;
 
@@ -122,13 +160,20 @@ export const ImageContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
+  margin-bottom: 0.8rem;
   animation: ${fadeIn} 0.6s ease-out 0.3s both;
 
   @media (max-width: 768px) {
-    flex: 0 0 auto;
-    height: clamp(14rem, 42vh, 22rem);
+    flex: 0 0 100%;
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%;
     min-width: 0;
     width: 100%;
+    margin-bottom: 0;
+    touch-action: pan-y;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 `;
 
@@ -208,6 +253,10 @@ const CLIENT_ANIMATION_DELAY_STEP = 0.05;
 export const ClientHeading = styled(ClientText)`
   text-decoration: underline;
   margin-bottom: 0.8rem;
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.1rem;
+  }
 `;
 
 export const ClientsList = styled.div`
@@ -222,7 +271,8 @@ export const ClientsList = styled.div`
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-items: center;
     overflow: visible;
-    gap: 0.45rem 0.75rem;
+    max-height: none;
+    gap: 0.7rem 0.9rem;
   }
 
   // no scrollbar

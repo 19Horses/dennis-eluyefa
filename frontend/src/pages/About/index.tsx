@@ -32,43 +32,48 @@ function About() {
   } = useGetAbout();
   const { data, isLoading, isError } = useGetClients();
 
-  if (isLoading || aboutIsLoading) {
+  if (aboutIsLoading || isLoading) {
     return <Loading />;
   }
-  if (isError || aboutIsError) {
-    return <p>Error!</p>;
-  }
+
+  const quoteText =
+    aboutData?.quote ?? 'i just want to create images full of life.';
+
   return (
     <AboutContainer>
       <QuoteContainer>
         <AnimatedQuote
           key={isMobile ? 'mono' : 'color'}
           monochrome={isMobile}
-          quote={
-            `“${aboutData?.quote}”` ||
-            '“i just want to create images full of life.”'
-          }
+          quote={`“${quoteText}”`}
         />
       </QuoteContainer>
-      <ImageContainer>
-        <BeAboutImage
-          src={getSanityImageUrl(aboutData?.image, ABOUT_IMAGE_OPTIONS)}
-          srcSet={buildSanityImageSrcSet(aboutData?.image, ABOUT_IMAGE_OPTIONS)}
-          alt="About"
-        />
-        <ImageOverlay />
-        <BioText>{aboutData?.bio}</BioText>
-      </ImageContainer>
-      <ClientContainer>
-        <ClientHeading>select clients</ClientHeading>
-        <ClientsList>
-          {data?.map((client, index) => (
-            <ClientText key={client} $delay={index}>
-              {client}
-            </ClientText>
-          ))}
-        </ClientsList>
-      </ClientContainer>
+      {!aboutIsError && (
+        <ImageContainer>
+          <BeAboutImage
+            src={getSanityImageUrl(aboutData?.image, ABOUT_IMAGE_OPTIONS)}
+            srcSet={buildSanityImageSrcSet(
+              aboutData?.image,
+              ABOUT_IMAGE_OPTIONS
+            )}
+            alt="About"
+          />
+          <ImageOverlay />
+          <BioText>{aboutData?.bio}</BioText>
+        </ImageContainer>
+      )}
+      {!isError && (
+        <ClientContainer>
+          <ClientHeading>select clients</ClientHeading>
+          <ClientsList>
+            {data?.map((client, index) => (
+              <ClientText key={client} $delay={index}>
+                {client}
+              </ClientText>
+            ))}
+          </ClientsList>
+        </ClientContainer>
+      )}
     </AboutContainer>
   );
 }
