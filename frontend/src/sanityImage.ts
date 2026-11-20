@@ -83,9 +83,7 @@ export function buildSanityImageSrcSet(
         ...options,
         width: Math.round(options.width * dpr),
         height:
-          options.height != null
-            ? Math.round(options.height * dpr)
-            : undefined,
+          options.height != null ? Math.round(options.height * dpr) : undefined,
       });
       return url ? `${url} ${dpr}x` : null;
     })
@@ -103,9 +101,7 @@ export function buildSanityImageSrcSetFromUrl(
       const optimized = optimizeSanityImage(url, {
         ...options,
         width: Math.round(options.width * dpr),
-        height: options.height
-          ? Math.round(options.height * dpr)
-          : undefined,
+        height: options.height ? Math.round(options.height * dpr) : undefined,
       });
       return `${optimized} ${dpr}x`;
     })

@@ -145,7 +145,12 @@ export const AnimatedQuote = ({
               LETTER_COLOR_SEQUENCE[letterIndex % LETTER_COLOR_SEQUENCE.length];
             letterIndex++;
           }
-        } else if (char !== ' ' && char !== '“' && char !== '”' && char !== '"') {
+        } else if (
+          char !== ' ' &&
+          char !== '“' &&
+          char !== '”' &&
+          char !== '"'
+        ) {
           letterIndex++;
         }
 

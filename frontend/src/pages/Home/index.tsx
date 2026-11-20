@@ -32,9 +32,8 @@ function Home() {
             srcSet: buildSanityImageSrcSet(img, HERO_IMAGE_OPTIONS),
           };
         })
-        .filter(
-          (image): image is { src: string; srcSet: string | undefined } =>
-            Boolean(image)
+        .filter((image): image is { src: string; srcSet: string | undefined } =>
+          Boolean(image)
         ) ?? []
     );
   }, [data?.images]);

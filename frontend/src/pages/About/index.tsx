@@ -53,10 +53,7 @@ function About() {
       <ImageContainer>
         <BeAboutImage
           src={getSanityImageUrl(aboutData?.image, ABOUT_IMAGE_OPTIONS)}
-          srcSet={buildSanityImageSrcSet(
-            aboutData?.image,
-            ABOUT_IMAGE_OPTIONS
-          )}
+          srcSet={buildSanityImageSrcSet(aboutData?.image, ABOUT_IMAGE_OPTIONS)}
           alt="About"
         />
         <ImageOverlay />
