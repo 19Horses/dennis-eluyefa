@@ -67,6 +67,7 @@ const SocialLink = styled.a`
   color: inherit;
   text-decoration: none;
   font-size: 1.2rem;
+  line-height: 1.2;
   cursor: pointer;
   transition: opacity 0.2s ease;
 
@@ -83,6 +84,7 @@ const SocialLink = styled.a`
 const Separator = styled.span`
   color: inherit;
   font-size: 1.2rem;
+  line-height: 1.2;
 
   &::selection {
     background-color: ${COLORS.primary};
@@ -97,6 +99,9 @@ const Copyright = styled.p<{ $isMobileNav: boolean }>`
   font-weight: bold;
   margin: 0;
   text-align: center;
+  box-sizing: border-box;
+  width: ${({ $isMobileNav }) => ($isMobileNav ? '100%' : 'auto')};
+  padding: ${({ $isMobileNav }) => ($isMobileNav ? '0 1.25rem' : '0')};
 
   &::selection {
     background-color: ${COLORS.primary};
@@ -113,11 +118,13 @@ const GalleryLink = styled(Link)<{ $isMobileNav: boolean }>`
   font-family: 'Helvetica Neue', sans-serif;
   color: inherit;
   text-decoration: none;
-  font-size: ${({ $isMobileNav }) => ($isMobileNav ? '0.95rem' : '1.2rem')};
+  font-size: 1.2rem;
+  line-height: 1.2;
   cursor: pointer;
   transition: opacity 0.2s ease;
   margin-left: ${({ $isMobileNav }) => ($isMobileNav ? 'auto' : '0')};
   text-align: right;
+  flex-shrink: 0;
 
   &:hover {
     opacity: 0.6;

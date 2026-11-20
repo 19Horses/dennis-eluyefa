@@ -15,6 +15,7 @@ const QuoteStage = styled.div<{ $monochrome: boolean }>`
   padding: 0;
   cursor: ${({ $monochrome }) => ($monochrome ? 'auto' : 'none')};
   overflow: hidden;
+  touch-action: ${({ $monochrome }) => ($monochrome ? 'pan-y' : 'none')};
 
   /* react-p5 wraps the canvas in a div that otherwise shrinks to canvas size */
   & > .react-p5 {
@@ -22,12 +23,14 @@ const QuoteStage = styled.div<{ $monochrome: boolean }>`
     height: 100% !important;
     min-height: 0;
     display: block;
+    pointer-events: ${({ $monochrome }) => ($monochrome ? 'none' : 'auto')};
   }
 
   & > .react-p5 > canvas {
     width: 100% !important;
     height: 100% !important;
     display: block;
+    touch-action: ${({ $monochrome }) => ($monochrome ? 'pan-y' : 'none')};
   }
 `;
 

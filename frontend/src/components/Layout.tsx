@@ -21,6 +21,11 @@ const LayoutContainer = styled.div<{ $detachFooter: boolean }>`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  @media (max-width: 768px) {
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
 `;
 
 const PageViewport = styled.div<{ $isLanding: boolean }>`
