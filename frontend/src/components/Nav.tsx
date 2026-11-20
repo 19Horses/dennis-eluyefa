@@ -4,26 +4,43 @@ import { styled } from 'styled-components';
 import { COLORS } from '../constants';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { fadeIn, fadeInPreserveOpacity } from '../../styles/animations';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.svg';
+import logoWhite from '../assets/logo-white.svg';
 import Footer from './Footer';
 
-const NavContainer = styled.nav`
+type NavProps = {
+  onLanding?: boolean;
+};
+
+const NavContainer = styled.nav<{ $onLanding: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
   padding: clamp(0.5rem, 1.5vw, 0.2rem) clamp(0.75rem, 3vw, 1.5rem);
-  padding-left: 0;
+  padding-left: clamp(0.75rem, 2vw, 1.25rem);
   width: 100%;
-  height: 10%;
-  min-height: 10%;
-  max-height: 10%;
+  height: 10dvh;
+  min-height: 10dvh;
+  max-height: 10dvh;
   box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: ${({ $onLanding }) =>
+    $onLanding ? 'transparent' : COLORS.secondary};
+  transition: background-color 0.45s ease;
 
   @media (max-width: 768px) {
     gap: 0.6rem;
     position: relative;
     z-index: 20;
+    height: 10%;
+    min-height: 10%;
+    max-height: 10%;
+    background-color: ${COLORS.secondary};
   }
 `;
 
@@ -32,14 +49,20 @@ const STAGGER_DELAY = 0.1;
 const NavLink = styled(Link)<{
   $isActive: boolean;
   $isProject?: boolean;
+  $onLanding?: boolean;
   $index?: number;
 }>`
   font-family: 'Helvetica Neue Bold', sans-serif;
   text-decoration: none;
-  color: ${({ $isProject }) => ($isProject ? COLORS.tertiary : COLORS.primary)};
+  color: ${({ $onLanding, $isProject }) =>
+    $onLanding
+      ? COLORS.secondary
+      : $isProject
+      ? COLORS.tertiary
+      : COLORS.primary};
   font-weight: bold;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0.5)};
-  transition: opacity 0.3s ease, color 0.3s ease;
+  transition: opacity 0.35s ease, color 0.35s ease;
   font-size: clamp(2rem, 5vw, 4rem);
   line-height: 1;
   max-width: 100%;
@@ -49,10 +72,12 @@ const NavLink = styled(Link)<{
 
   &:hover {
     opacity: 1;
+    color: ${({ $onLanding }) => ($onLanding ? COLORS.tertiary : undefined)};
   }
 
   &::selection {
-    background-color: ${COLORS.primary};
+    background-color: ${({ $onLanding }) =>
+      $onLanding ? COLORS.secondary : COLORS.primary};
     color: ${COLORS.tertiary};
   }
 `;
@@ -73,7 +98,7 @@ const NavLinks = styled.div`
   }
 `;
 
-const BurgerButton = styled.button<{ $isOpen: boolean }>`
+const BurgerButton = styled.button<{ $isOpen: boolean; $onLanding: boolean }>`
   display: none;
   border: 0;
   padding: 0;
@@ -96,9 +121,10 @@ const BurgerButton = styled.button<{ $isOpen: boolean }>`
     width: 1.8rem;
     height: 2px;
     border-radius: 999px;
-    background-color: ${({ $isOpen }) => ($isOpen ? '#fff' : '#000')};
+    background-color: ${({ $isOpen, $onLanding }) =>
+      $isOpen || $onLanding ? '#fff' : '#000'};
     transition: transform 0.3s ease, opacity 0.3s ease,
-      background-color 0.3s ease;
+      background-color 0.35s ease;
   }
 
   span:first-child {
@@ -168,19 +194,17 @@ const MobileNavLink = styled(Link)<{
   }
 `;
 
-const Logo = styled.img`
-  object-fit: contain;
-  width: clamp(130px, 19vw, 250px);
-  height: auto;
+const LogoLink = styled(Link)`
+  position: relative;
+  display: inline-flex;
+  width: clamp(120px, 17.5vw, 230px);
   max-width: 100%;
   opacity: 0;
   animation: ${fadeIn} 0.5s ease forwards;
-  transition: transform 200ms ease, opacity 200ms ease;
+  transition: transform 200ms ease;
 
   &:hover {
     transform: scale(1.01);
-    cursor: pointer;
-    opacity: 0.95;
   }
 
   &:active {
@@ -192,13 +216,32 @@ const Logo = styled.img`
     opacity: 1;
     transition: none;
   }
+`;
+
+const Logo = styled.img<{ $visible: boolean }>`
+  object-fit: contain;
+  width: 100%;
+  height: auto;
+  display: block;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+
+  &:first-of-type {
+    position: relative;
+  }
+
+  &:last-of-type {
+    position: absolute;
+    inset: 0;
+  }
 
   &::selection {
     background-color: transparent;
   }
 `;
 
-const Nav = () => {
+const Nav = ({ onLanding = false }: NavProps) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -219,13 +262,15 @@ const Nav = () => {
   }, [isMenuOpen]);
 
   return (
-    <NavContainer>
-      <Link to={isMobile ? '/work' : '/'}>
-        <Logo src={logo} alt="logo" />
-      </Link>
+    <NavContainer $onLanding={onLanding}>
+      <LogoLink to={isMobile ? '/work' : '/'}>
+        <Logo src={logo} alt="logo" $visible={!onLanding} />
+        <Logo src={logoWhite} alt="" aria-hidden $visible={onLanding} />
+      </LogoLink>
       <BurgerButton
         type="button"
         $isOpen={isMenuOpen}
+        $onLanding={onLanding}
         onClick={() => setIsMenuOpen((open) => !open)}
         aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={isMenuOpen}
@@ -238,14 +283,25 @@ const Nav = () => {
           to="/work"
           $isActive={isActive('/work') || isProject}
           $isProject={isProject}
+          $onLanding={onLanding}
           $index={0}
         >
           work
         </NavLink>
-        <NavLink to="/about" $isActive={isActive('/about')} $index={1}>
+        <NavLink
+          to="/about"
+          $isActive={isActive('/about')}
+          $onLanding={onLanding}
+          $index={1}
+        >
           about
         </NavLink>
-        <NavLink to="/contact" $isActive={isActive('/contact')} $index={2}>
+        <NavLink
+          to="/contact"
+          $isActive={isActive('/contact')}
+          $onLanding={onLanding}
+          $index={2}
+        >
           contact
         </NavLink>
       </NavLinks>
