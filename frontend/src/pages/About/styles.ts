@@ -15,8 +15,14 @@ export const AboutContainer = styled.div`
   overflow-x: hidden;
 
   @media (max-width: 768px) {
+    height: auto;
+    min-height: 0;
+    max-height: 100%;
     flex-direction: column;
+    justify-content: flex-start;
     padding: 0.8rem 0.6rem;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 `;
 
@@ -40,6 +46,7 @@ export const ClientText = styled.p<{ $delay?: number }>`
 
   @media (max-width: 768px) {
     text-align: center;
+    font-size: clamp(1.05rem, 4.2vw, 1.35rem);
   }
 `;
 
@@ -63,9 +70,12 @@ export const ClientContainer = styled.div`
   @media (max-width: 768px) {
     flex: 0 0 auto;
     width: 100%;
+    height: auto;
+    min-height: 0;
     min-width: 0;
     align-items: center;
     padding: 0.9rem 0.8rem;
+    overflow: visible;
   }
 
   &:hover {
@@ -96,6 +106,8 @@ export const QuoteContainer = styled.div`
   animation: ${fadeIn} 0.6s ease-out 0.15s both;
 
   @media (max-width: 768px) {
+    flex: 0 0 auto;
+    height: clamp(10rem, 32vh, 16rem);
     padding: 1.2rem 1rem;
     min-width: 0;
   }
@@ -113,6 +125,8 @@ export const ImageContainer = styled.div`
   animation: ${fadeIn} 0.6s ease-out 0.3s both;
 
   @media (max-width: 768px) {
+    flex: 0 0 auto;
+    height: clamp(14rem, 42vh, 22rem);
     min-width: 0;
     width: 100%;
   }
@@ -207,6 +221,8 @@ export const ClientsList = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-items: center;
+    overflow: visible;
+    gap: 0.45rem 0.75rem;
   }
 
   // no scrollbar
