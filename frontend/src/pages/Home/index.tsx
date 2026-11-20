@@ -1,9 +1,17 @@
 import { COLORS } from '../../constants';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { useGetLanding } from '../../queries/useGetLanding';
-import { getSanityImageUrl, IMAGE_WIDTHS } from '../../sanityImage';
+import {
+  buildSanityImageSrcSet,
+  getSanityImageUrl,
+  IMAGE_WIDTHS,
+} from '../../sanityImage';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Navigate } from 'react-router';
 import { Loading } from '../../components/Loading';
 import { HomeContainer, HomeImage, HomeTitle, ImageOverlay } from './styles';
+
+const HERO_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.hero };
 
 function Home() {
   const { data, isLoading, isError } = useGetLanding();
@@ -13,16 +21,25 @@ function Home() {
   const [isMouseOver, setIsMouseOver] = useState(false);
   const cursorRef = useRef<HTMLDivElement | null>(null);
 
-  const imageUrls = useMemo(() => {
+  const images = useMemo(() => {
     return (
       data?.images
-        ?.map((img) => getSanityImageUrl(img, { width: IMAGE_WIDTHS.hero }))
-        .filter((url): url is string => Boolean(url)) ?? []
+        ?.map((img) => {
+          const src = getSanityImageUrl(img, HERO_IMAGE_OPTIONS);
+          if (!src) return null;
+          return {
+            src,
+            srcSet: buildSanityImageSrcSet(img, HERO_IMAGE_OPTIONS),
+          };
+        })
+        .filter((image): image is { src: string; srcSet: string | undefined } =>
+          Boolean(image)
+        ) ?? []
     );
   }, [data?.images]);
 
   useEffect(() => {
-    if (imageUrls.length === 0) return;
+    if (images.length === 0) return;
     if (activeIndex !== -1) return;
 
     // Ensure we paint once with all images at opacity 0, then fade the first in.
@@ -35,18 +52,18 @@ function Home() {
       window.cancelAnimationFrame(raf1);
       if (raf2 != null) window.cancelAnimationFrame(raf2);
     };
-  }, [activeIndex, imageUrls.length]);
+  }, [activeIndex, images.length]);
 
   useEffect(() => {
-    if (imageUrls.length <= 1) return;
+    if (images.length <= 1) return;
 
     const id = window.setInterval(() => {
       if (isMouseDown) return;
-      setActiveIndex((i) => (i + 1) % imageUrls.length);
+      setActiveIndex((i) => (i + 1) % images.length);
     }, 5500);
 
     return () => window.clearInterval(id);
-  }, [imageUrls.length, isMouseDown]);
+  }, [images.length, isMouseDown]);
 
   useEffect(() => {
     if (!isMouseOver) return;
@@ -102,10 +119,11 @@ function Home() {
       onMouseLeave={() => setIsMouseDown(false)}
     >
       <HomeTitle>{data?.title}</HomeTitle>
-      {imageUrls.map((url, idx) => (
+      {images.map((image, idx) => (
         <HomeImage
-          key={url}
-          src={url}
+          key={image.src}
+          src={image.src}
+          srcSet={image.srcSet}
           alt="Home"
           $isActive={idx === activeIndex}
         />
@@ -118,4 +136,14 @@ function Home() {
   );
 }
 
-export default Home;
+function HomeRoute() {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return <Navigate to="/work" replace />;
+  }
+
+  return <Home />;
+}
+
+export default HomeRoute;

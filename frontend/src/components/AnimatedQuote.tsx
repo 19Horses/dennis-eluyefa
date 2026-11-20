@@ -4,6 +4,7 @@ import type p5Types from 'p5';
 
 type AnimatedQuoteProps = {
   quote: string;
+  monochrome?: boolean;
 };
 
 type Letter = {
@@ -65,7 +66,10 @@ const LETTER_COLOR_SEQUENCE = [
 
 const BACKGROUND = '#000000';
 
-export const AnimatedQuote = ({ quote }: AnimatedQuoteProps) => {
+export const AnimatedQuote = ({
+  quote,
+  monochrome = false,
+}: AnimatedQuoteProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const fontUrl = new URL('../assets/HelveticaNeue-Bold.otf', import.meta.url)
     .href;
@@ -76,6 +80,8 @@ export const AnimatedQuote = ({ quote }: AnimatedQuoteProps) => {
   const revealedCountRef = useRef<number>(0);
   const maxWidthRef = useRef<number>(0);
   const isInitializedRef = useRef<boolean>(false);
+  const monochromeRef = useRef(monochrome);
+  monochromeRef.current = monochrome;
 
   const initializeLetters = (p5: p5Types) => {
     maxWidthRef.current = p5.width * 0.7;
@@ -119,23 +125,32 @@ export const AnimatedQuote = ({ quote }: AnimatedQuoteProps) => {
 
       for (const char of line) {
         const charWidth = p5.textWidth(char);
-        let color: string;
+        let color: string = COLORS.white;
 
-        if (
-          char === '“' ||
-          char === '”' ||
-          char === '"' ||
-          char === '"' ||
-          char === '"'
+        if (!monochromeRef.current) {
+          if (
+            char === '“' ||
+            char === '”' ||
+            char === '"' ||
+            char === '"' ||
+            char === '"'
+          ) {
+            color = COLORS.white;
+          } else if (char === '.' || char === '!' || char === '?') {
+            color = COLORS.yellow;
+          } else if (char === ' ') {
+            color = COLORS.white;
+          } else {
+            color =
+              LETTER_COLOR_SEQUENCE[letterIndex % LETTER_COLOR_SEQUENCE.length];
+            letterIndex++;
+          }
+        } else if (
+          char !== ' ' &&
+          char !== '“' &&
+          char !== '”' &&
+          char !== '"'
         ) {
-          color = COLORS.white;
-        } else if (char === '.' || char === '!' || char === '?') {
-          color = COLORS.yellow;
-        } else if (char === ' ') {
-          color = COLORS.white;
-        } else {
-          color =
-            LETTER_COLOR_SEQUENCE[letterIndex % LETTER_COLOR_SEQUENCE.length];
           letterIndex++;
         }
 

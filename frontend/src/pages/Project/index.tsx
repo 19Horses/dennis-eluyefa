@@ -1,8 +1,13 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { useGetProject } from '../../queries/useGetProjects';
 import { formatDate } from '../../utils';
-import { getSanityImageUrl, IMAGE_WIDTHS } from '../../sanityImage';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import {
+  buildSanityImageSrcSet,
+  getSanityImageUrl,
+  IMAGE_WIDTHS,
+} from '../../sanityImage';
 import { Loading } from '../../components/Loading';
 import {
   ProjectContainer,
@@ -16,18 +21,33 @@ import {
   ProjectDate,
   ClickZoneLeft,
   ClickZoneRight,
+  MobileGallery,
+  MobileScroller,
+  MobileSlide,
+  MobileSlideImage,
+  MobileCloseButton,
+  MobileCloseIcon,
+  MobileCounter,
 } from './styles';
+
+const GALLERY_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.gallery };
 
 export default function Project() {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { data, isLoading, isError } = useGetProject(slug ?? '');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
 
   const images = data?.images ?? [];
   const count = images.length;
 
   useEffect(() => {
     setCurrentIndex(0);
+    if (scrollerRef.current) {
+      scrollerRef.current.scrollLeft = 0;
+    }
   }, [slug]);
 
   const handlePrev = useCallback(() => {
@@ -36,6 +56,14 @@ export default function Project() {
 
   const handleNext = useCallback(() => {
     setCurrentIndex((i) => Math.min(count - 1, i + 1));
+  }, [count]);
+
+  const handleMobileScroll = useCallback(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || scroller.clientWidth === 0) return;
+
+    const nextIndex = Math.round(scroller.scrollLeft / scroller.clientWidth);
+    setCurrentIndex(Math.min(Math.max(nextIndex, 0), Math.max(count - 1, 0)));
   }, [count]);
 
   if (isLoading) {
@@ -49,10 +77,71 @@ export default function Project() {
   if (count === 0) {
     return (
       <ProjectContainer>
-        <ProjectMeta>
-          <ProjectTitle>{data?.title}</ProjectTitle>
-          <ProjectDate>{formatDate(data?.date)}</ProjectDate>
-        </ProjectMeta>
+        {isMobile ? (
+          <MobileGallery>
+            <MobileCloseButton
+              type="button"
+              aria-label="Close project"
+              onClick={() => navigate('/work')}
+            >
+              <MobileCloseIcon />
+            </MobileCloseButton>
+            <ProjectMeta>
+              <ProjectTitle>{data?.title}</ProjectTitle>
+              <ProjectDate>{formatDate(data?.date)}</ProjectDate>
+            </ProjectMeta>
+          </MobileGallery>
+        ) : (
+          <ProjectMeta>
+            <ProjectTitle>{data?.title}</ProjectTitle>
+            <ProjectDate>{formatDate(data?.date)}</ProjectDate>
+          </ProjectMeta>
+        )}
+      </ProjectContainer>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <ProjectContainer>
+        <MobileGallery>
+          <MobileCloseButton
+            type="button"
+            aria-label="Close project"
+            onClick={() => navigate('/work')}
+          >
+            <MobileCloseIcon />
+          </MobileCloseButton>
+
+          <MobileScroller
+            ref={scrollerRef}
+            onScroll={handleMobileScroll}
+            aria-label={`${data?.title ?? 'Project'} images`}
+          >
+            {images.map((img, index) => {
+              const src = getSanityImageUrl(img, GALLERY_IMAGE_OPTIONS);
+              const srcSet = buildSanityImageSrcSet(img, GALLERY_IMAGE_OPTIONS);
+
+              return (
+                <MobileSlide key={img._key}>
+                  {src && (
+                    <MobileSlideImage
+                      src={src}
+                      srcSet={srcSet}
+                      alt={data?.title ?? ''}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      draggable={false}
+                    />
+                  )}
+                </MobileSlide>
+              );
+            })}
+          </MobileScroller>
+
+          <MobileCounter>
+            {currentIndex + 1}/{count}
+          </MobileCounter>
+        </MobileGallery>
       </ProjectContainer>
     );
   }
@@ -69,13 +158,19 @@ export default function Project() {
           }}
         >
           {images.map((img, index) => {
-            const src = getSanityImageUrl(img, {
-              width: IMAGE_WIDTHS.gallery,
-            });
+            const src = getSanityImageUrl(img, GALLERY_IMAGE_OPTIONS);
+            const srcSet = buildSanityImageSrcSet(img, GALLERY_IMAGE_OPTIONS);
             return (
               <Slide key={img._key} $count={count}>
                 <SlideImageContainer>
-                  {src && <SlideImage src={src} alt={data?.title ?? ''} />}
+                  {src && (
+                    <SlideImage
+                      src={src}
+                      srcSet={srcSet}
+                      alt={data?.title ?? ''}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                    />
+                  )}
                 </SlideImageContainer>
                 {index === 0 && (
                   <ProjectMeta>

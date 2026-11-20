@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { styled } from 'styled-components';
 import { COLORS } from '../constants';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { fadeIn, fadeInPreserveOpacity } from '../../styles/animations';
 import logo from '../assets/logo.png';
 import Footer from './Footer';
@@ -199,6 +200,7 @@ const Logo = styled.img`
 
 const Nav = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isActive = (path: string) => location.pathname === path;
   const isProject =
@@ -218,7 +220,7 @@ const Nav = () => {
 
   return (
     <NavContainer>
-      <Link to="/">
+      <Link to={isMobile ? '/work' : '/'}>
         <Logo src={logo} alt="logo" />
       </Link>
       <BurgerButton

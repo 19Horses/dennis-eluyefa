@@ -2,7 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Loading } from '../../components/Loading';
 import { useGetProjects } from '../../queries/useGetProjects';
-import { getSanityImageUrl, IMAGE_WIDTHS } from '../../sanityImage';
+import {
+  buildSanityImageSrcSet,
+  getSanityImageUrl,
+  IMAGE_WIDTHS,
+} from '../../sanityImage';
 import {
   ProjectCard,
   ProjectImage,
@@ -10,6 +14,8 @@ import {
   WorkContainer,
   WorkWrapper,
 } from './styles';
+
+const GRID_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.grid };
 
 function Work() {
   const navigate = useNavigate();
@@ -68,10 +74,13 @@ function Work() {
             onClick={() => navigate(`/work/${project.slug.current}`)}
           >
             <ProjectImage
-              src={getSanityImageUrl(project.images[0], {
-                width: IMAGE_WIDTHS.grid,
-              })}
+              src={getSanityImageUrl(project.images[0], GRID_IMAGE_OPTIONS)}
+              srcSet={buildSanityImageSrcSet(
+                project.images[0],
+                GRID_IMAGE_OPTIONS
+              )}
               alt={project.title}
+              loading="lazy"
             />
             <ProjectTitle>{project.title}</ProjectTitle>
           </ProjectCard>
