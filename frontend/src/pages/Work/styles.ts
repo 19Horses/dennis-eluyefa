@@ -1,6 +1,11 @@
 import { styled } from 'styled-components';
 import { COLORS } from '../../constants';
-import { fadeIn } from '../../../styles/animations';
+import {
+  fadeIn,
+  fadeInOpacity,
+  fadeOut,
+  fadeOutDown,
+} from '../../../styles/animations';
 
 export const WorkWrapper = styled.div<{
   $fadeTop: number;
@@ -141,5 +146,182 @@ export const ProjectCard = styled.div<{ $index?: number }>`
     ${ProjectTitle} {
       opacity: 1;
     }
+  }
+`;
+
+export const ViewModeToggle = styled.div`
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.85rem;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.35rem 0.4rem;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.55);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const ViewModeButton = styled.button<{ $active: boolean }>`
+  border: 0;
+  padding: 0.35rem 0.7rem;
+  margin: 0;
+  background: transparent;
+  color: ${COLORS.secondary};
+  font-family: 'Helvetica Neue Bold', sans-serif;
+  font-size: 1.35rem;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  opacity: ${({ $active }) => ($active ? 1 : 0.4)};
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 1px solid ${COLORS.secondary};
+    outline-offset: 2px;
+  }
+`;
+
+export const OverlayRoot = styled.div<{ $exiting?: boolean }>`
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: ${({ $exiting }) => ($exiting ? 'none' : 'auto')};
+`;
+
+/* Dim layer only — sibling to images so opacity fades independently */
+export const OverlayDim = styled.div<{
+  $exiting?: boolean;
+  $exitDurationMs?: number;
+}>`
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  cursor: pointer;
+  animation-name: ${({ $exiting }) => ($exiting ? fadeOut : fadeInOpacity)};
+  animation-duration: ${({ $exiting, $exitDurationMs }) =>
+    $exiting ? `${($exitDurationMs ?? 450) / 1000}s` : '0.35s'};
+  animation-timing-function: ease;
+  animation-fill-mode: both;
+`;
+
+export const OverlayStage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  /* Match WorkContainer padding so overlay images share the same inset */
+  padding: 0.5rem;
+  box-sizing: border-box;
+  height: 80%;
+  min-height: 0;
+  cursor: default;
+
+  @media (max-width: 1024px) {
+    padding: 0.6rem;
+  }
+`;
+
+export const OverlayScroller = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  /* Match WorkContainer gap */
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: auto;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 1024px) {
+    gap: 0.6rem;
+  }
+`;
+
+export const OverlaySlide = styled.div<{
+  $index: number;
+  $reveal: boolean;
+  $exiting: boolean;
+}>`
+  flex: 0 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  opacity: ${({ $exiting }) => ($exiting ? 1 : 0)};
+  animation-name: ${({ $exiting, $reveal }) =>
+    $exiting ? fadeOutDown : $reveal ? fadeIn : 'none'};
+  animation-duration: ${({ $exiting }) => ($exiting ? '0.45s' : '0.65s')};
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+  /* Exit mirrors entrance stagger so slides leave as their own layer */
+  animation-delay: ${({ $exiting, $reveal, $index }) =>
+    $exiting ? `${$index * 0.08}s` : $reveal ? `${$index * 0.1}s` : '0s'};
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: ${({ $reveal, $exiting }) => ($reveal && !$exiting ? 1 : 0)};
+    animation: none;
+  }
+`;
+export const OverlaySlideImage = styled.img`
+  height: 100%;
+  width: auto;
+  max-width: none;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+
+  &::selection {
+    background-color: transparent;
+  }
+`;
+
+export const OverlayCloseButton = styled.button<{ $exiting?: boolean }>`
+  position: absolute;
+  right: 1.25rem;
+  bottom: 0.85rem;
+  z-index: 5;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: ${COLORS.secondary};
+  font-family: 'Helvetica Neue Bold', sans-serif;
+  font-size: clamp(2.8rem, 5vw, 4.5rem);
+  font-weight: bold;
+  line-height: 0.8;
+  cursor: pointer;
+  opacity: ${({ $exiting }) => ($exiting ? 0 : 1)};
+  transition: opacity 0.45s ease;
+
+  &:hover {
+    opacity: ${({ $exiting }) => ($exiting ? 0 : 0.7)};
+  }
+
+  &:focus-visible {
+    outline: 1px solid ${COLORS.secondary};
+    outline-offset: 3px;
   }
 `;
