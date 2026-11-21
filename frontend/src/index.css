@@ -21,6 +21,8 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  /* Match nav white so Safari rubber-band / PTR chrome matches */
+  background-color: #ffffff;
 }
 
 body {
@@ -29,8 +31,20 @@ body {
 
 #root {
   height: 100%;
+  background-color: #ffffff;
 }
 
 img::selection {
   background-color: transparent;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #f000b6;
+  outline-offset: 2px;
+  /* Rectangular ring — don't inherit rounded control radii */
+  border-radius: 0;
 }

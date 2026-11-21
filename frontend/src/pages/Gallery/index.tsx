@@ -17,20 +17,56 @@ import {
   DecelToggle,
   DecelTrack,
   GalleryContainer,
+  GalleryScroller,
   ScatterImage,
 } from './styles';
 
 const SCATTER_OPTIONS = { width: IMAGE_WIDTHS.scatter };
 const MIN_DISPLAY_WIDTH = 140;
 const MAX_DISPLAY_WIDTH = 280;
+/** Pinch zoom limits — adjust as needed */
+const PINCH_MIN_WIDTH = 112;
+const PINCH_MAX_WIDTH = 380;
+
 const getScatterPadding = (container: HTMLElement) => {
   const styles = window.getComputedStyle(container);
   return parseFloat(styles.paddingLeft) || 0;
 };
 
-/** Match ScatterImage `max-width: min(42vw, 320px)` so bounds use real display size */
+/** Cap assigned width to CSS max-width: min(90vw, 420px) */
 const getDisplayWidth = (assignedWidth: number) =>
-  Math.min(assignedWidth, window.innerWidth * 0.42, 320);
+  Math.min(assignedWidth, window.innerWidth * 0.9, PINCH_MAX_WIDTH);
+
+const touchDistance = (touches: TouchList) => {
+  if (touches.length < 2) return 0;
+  const a = touches[0];
+  const b = touches[1];
+  return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+};
+
+const scatterIdFromTarget = (target: EventTarget | null) => {
+  if (!(target instanceof Element)) return null;
+  const image = target.closest('[data-scatter-id]') as HTMLElement | null;
+  return image?.dataset.scatterId ?? null;
+};
+
+const scatterIdFromTouches = (touches: TouchList) => {
+  for (let i = 0; i < touches.length; i += 1) {
+    const id = scatterIdFromTarget(touches[i].target);
+    if (id) return id;
+  }
+
+  for (let i = 0; i < touches.length; i += 1) {
+    const el = document.elementFromPoint(
+      touches[i].clientX,
+      touches[i].clientY
+    );
+    const id = scatterIdFromTarget(el);
+    if (id) return id;
+  }
+
+  return null;
+};
 const FLING_MIN_SPEED = 0.03; // px/ms
 const FLING_MAX_SPEED = 2.4; // px/ms
 /** How strongly release velocity maps to slide (1 = match mouse px/ms) */
@@ -60,6 +96,12 @@ type DragState = {
   pointerId: number;
 };
 
+type PinchState = {
+  id: string;
+  startDistance: number;
+  startWidth: number;
+};
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
@@ -84,6 +126,10 @@ function Gallery() {
   });
   const inertiaRafRef = useRef<number | null>(null);
   const inertiaLastRef = useRef(0);
+  const pinchRef = useRef<PinchState | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
 
   const readReleaseVelocity = () => {
     const samples = dragSampleRef.current.samples;
@@ -312,10 +358,150 @@ function Gallery() {
     [getItemBounds, stopInertia]
   );
 
+  // Attach after gallery mounts (ref is null while Loading is shown).
+  useEffect(() => {
+    if (isLoading || isError) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const clearDragForPinch = () => {
+      const activeDrag = dragRef.current;
+      if (!activeDrag) return;
+
+      const imageEl = container.querySelector<HTMLImageElement>(
+        `[data-scatter-id="${activeDrag.id}"]`
+      );
+      if (imageEl?.hasPointerCapture?.(activeDrag.pointerId)) {
+        imageEl.releasePointerCapture(activeDrag.pointerId);
+      }
+
+      dragRef.current = null;
+      setDrag(null);
+    };
+
+    const beginPinch = (event: TouchEvent) => {
+      if (event.touches.length !== 2) return;
+
+      const id =
+        scatterIdFromTouches(event.touches) || dragRef.current?.id || null;
+      if (!id) return;
+
+      const target = itemsRef.current.find((item) => item.id === id);
+      if (!target) return;
+
+      event.preventDefault();
+      stopInertia();
+      clearDragForPinch();
+
+      topZRef.current += 1;
+      const nextZ = topZRef.current;
+      setItems((current) =>
+        current.map((entry) =>
+          entry.id === id ? { ...entry, zIndex: nextZ } : entry
+        )
+      );
+
+      pinchRef.current = {
+        id,
+        startDistance: touchDistance(event.touches),
+        startWidth: target.width,
+      };
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      beginPinch(event);
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      // Second finger can arrive as a move on some browsers before another start.
+      if (!pinchRef.current && event.touches.length === 2) {
+        beginPinch(event);
+      }
+
+      const pinch = pinchRef.current;
+      if (!pinch || event.touches.length < 2) return;
+
+      event.preventDefault();
+      const distance = touchDistance(event.touches);
+      if (pinch.startDistance <= 0 || distance <= 0) return;
+
+      const nextWidth = clamp(
+        Math.round(pinch.startWidth * (distance / pinch.startDistance)),
+        PINCH_MIN_WIDTH,
+        PINCH_MAX_WIDTH
+      );
+
+      setItems((current) => {
+        const target = current.find((item) => item.id === pinch.id);
+        if (!target || target.width === nextWidth) return current;
+
+        const imageEl = container.querySelector<HTMLImageElement>(
+          `[data-scatter-id="${pinch.id}"]`
+        );
+        const prevDisplayWidth =
+          imageEl?.getBoundingClientRect().width ||
+          getDisplayWidth(target.width);
+        const prevDisplayHeight =
+          imageEl?.getBoundingClientRect().height || prevDisplayWidth * 1.25;
+        const nextDisplayWidth = getDisplayWidth(nextWidth);
+        const aspect =
+          prevDisplayWidth > 0 ? prevDisplayHeight / prevDisplayWidth : 1.25;
+        const nextDisplayHeight = nextDisplayWidth * aspect;
+
+        // Keep the visual center fixed while width changes (not top-left).
+        const centerX = target.x + prevDisplayWidth / 2;
+        const centerY = target.y + prevDisplayHeight / 2;
+        const nextX = centerX - nextDisplayWidth / 2;
+        const nextY = centerY - nextDisplayHeight / 2;
+
+        const { pad, maxX, maxY } = getItemBounds(
+          { ...target, width: nextWidth },
+          nextDisplayWidth,
+          nextDisplayHeight
+        );
+
+        return current.map((item) =>
+          item.id === pinch.id
+            ? {
+                ...item,
+                width: nextWidth,
+                x: clamp(nextX, pad, maxX),
+                y: clamp(nextY, pad, maxY),
+              }
+            : item
+        );
+      });
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length < 2) {
+        pinchRef.current = null;
+      }
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
+    container.addEventListener('touchmove', handleTouchMove, {
+      passive: false,
+    });
+    container.addEventListener('touchend', handleTouchEnd);
+    container.addEventListener('touchcancel', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [getItemBounds, isError, isLoading, stopInertia]);
+
   const handlePointerDown = (
     event: ReactPointerEvent<HTMLImageElement>,
     item: ScatterItem
   ) => {
+    if (pinchRef.current) return;
     event.preventDefault();
     const container = containerRef.current;
     if (!container) return;
@@ -342,16 +528,18 @@ function Gallery() {
       samples: [],
     };
 
-    setDrag({
+    const nextDrag = {
       id: item.id,
       offsetX: event.clientX - bounds.left - item.x,
       offsetY: event.clientY - bounds.top - item.y,
       pointerId: event.pointerId,
-    });
+    };
+    dragRef.current = nextDrag;
+    setDrag(nextDrag);
   };
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!drag) return;
+    if (!drag || pinchRef.current) return;
     const container = containerRef.current;
     if (!container) return;
 
@@ -440,6 +628,7 @@ function Gallery() {
 
     const { vx, vy } = readReleaseVelocity();
     const id = drag.id;
+    dragRef.current = null;
     setDrag(null);
     if (decelOnRef.current) {
       startInertia(id, vx, vy);
@@ -455,27 +644,29 @@ function Gallery() {
   }
 
   return (
-    <GalleryContainer
-      ref={containerRef}
-      onPointerMove={handlePointerMove}
-      onPointerUp={endDrag}
-      onPointerCancel={endDrag}
-    >
-      {items.map((item) => (
-        <ScatterImage
-          key={item.id}
-          data-scatter-id={item.id}
-          src={item.src}
-          srcSet={item.srcSet}
-          alt=""
-          draggable={false}
-          $delay={item.delay}
-          $width={item.width}
-          $dragging={drag?.id === item.id}
-          style={{ left: item.x, top: item.y, zIndex: item.zIndex }}
-          onPointerDown={(event) => handlePointerDown(event, item)}
-        />
-      ))}
+    <GalleryScroller>
+      <GalleryContainer
+        ref={containerRef}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      >
+        {items.map((item) => (
+          <ScatterImage
+            key={item.id}
+            data-scatter-id={item.id}
+            src={item.src}
+            srcSet={item.srcSet}
+            alt=""
+            draggable={false}
+            $delay={item.delay}
+            $width={item.width}
+            $dragging={drag?.id === item.id}
+            style={{ left: item.x, top: item.y, zIndex: item.zIndex }}
+            onPointerDown={(event) => handlePointerDown(event, item)}
+          />
+        ))}
+      </GalleryContainer>
 
       <DecelToggle
         type="button"
@@ -494,7 +685,7 @@ function Gallery() {
         <DecelTrack $on={decelOn} aria-hidden />
         {decelOn ? 'on' : 'off'}
       </DecelToggle>
-    </GalleryContainer>
+    </GalleryScroller>
   );
 }
 

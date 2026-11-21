@@ -10,6 +10,30 @@ const scatterFadeIn = keyframes`
   }
 `;
 
+export const GalleryScroller = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background-color: ${COLORS.primary};
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Scroll empty space; images keep touch-action: none for drag/pinch */
+    touch-action: pan-y;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+`;
+
 export const GalleryContainer = styled.div`
   position: relative;
   /* Keep scatter z-index inside this context so images stay under mobile menu (z 20/30) */
@@ -31,7 +55,12 @@ export const GalleryContainer = styled.div`
   }
 
   @media (max-width: 768px) {
+    /* Taller canvas so the page can scroll a bit on mobile */
+    height: 155%;
+    min-height: 155%;
     padding: 0.4rem;
+    overflow: visible;
+    touch-action: pan-y;
   }
 `;
 
@@ -43,7 +72,7 @@ export const ScatterImage = styled.img<{
   position: absolute;
   width: ${({ $width }) => $width}px;
   height: auto;
-  max-width: min(42vw, 320px);
+  max-width: min(90vw, 380px);
   display: block;
   cursor: ${({ $dragging }) => ($dragging ? 'grabbing' : 'grab')};
   opacity: 0;
@@ -54,6 +83,7 @@ export const ScatterImage = styled.img<{
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
   pointer-events: auto;
   -webkit-user-drag: none;
+  touch-action: none;
 
   &::selection {
     background-color: transparent;
@@ -89,8 +119,16 @@ export const DecelToggle = styled.button<{ $on: boolean }>`
   pointer-events: auto;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
 
+  @media (max-width: 768px) {
+    position: sticky;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    /* Sit over the tall canvas while remaining sticky in the scroller */
+    margin-top: -2.5rem;
+  }
+
   &:focus-visible {
-    outline: 1px solid ${COLORS.secondary};
+    outline: 2px solid ${COLORS.tertiary};
     outline-offset: 2px;
   }
 `;

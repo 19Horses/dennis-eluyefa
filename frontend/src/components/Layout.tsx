@@ -5,7 +5,10 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import Footer from './Footer';
 import Nav from './Nav';
 
-const LayoutContainer = styled.div<{ $lockScroll: boolean }>`
+const LayoutContainer = styled.div<{
+  $lockScroll: boolean;
+  $pageScroll: boolean;
+}>`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -14,8 +17,8 @@ const LayoutContainer = styled.div<{ $lockScroll: boolean }>`
   box-sizing: border-box;
   overflow: ${({ $lockScroll }) => ($lockScroll ? 'hidden' : 'auto')};
   overscroll-behavior: ${({ $lockScroll }) => ($lockScroll ? 'none' : 'auto')};
-  scroll-snap-type: ${({ $lockScroll }) =>
-    $lockScroll ? 'none' : 'y mandatory'};
+  scroll-snap-type: ${({ $lockScroll, $pageScroll }) =>
+    $lockScroll || $pageScroll ? 'none' : 'y mandatory'};
   scroll-behavior: smooth;
   scrollbar-width: none;
 
@@ -25,26 +28,31 @@ const LayoutContainer = styled.div<{ $lockScroll: boolean }>`
 
   @media (max-width: 768px) {
     overflow: hidden;
-    overscroll-behavior: none;
+    /* Allow Safari pull-to-refresh; contain sideways only */
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
     scroll-snap-type: none;
   }
 `;
 
-const PageViewport = styled.div<{ $isLanding: boolean }>`
+const PageViewport = styled.div<{
+  $isLanding: boolean;
+  $pageScroll: boolean;
+}>`
   position: relative;
-  flex: 0 0 100dvh;
+  flex: ${({ $pageScroll }) => ($pageScroll ? '0 0 auto' : '0 0 100dvh')};
   width: 100%;
-  min-height: 100dvh;
-  height: 100dvh;
+  min-height: ${({ $pageScroll }) => ($pageScroll ? '0' : '100dvh')};
+  height: ${({ $pageScroll }) => ($pageScroll ? 'auto' : '100dvh')};
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: ${({ $pageScroll }) => ($pageScroll ? 'visible' : 'hidden')};
   background-color: ${({ $isLanding }) =>
     $isLanding ? COLORS.primary : COLORS.secondary};
   transition: background-color 0.45s ease;
   box-sizing: border-box;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-align: ${({ $pageScroll }) => ($pageScroll ? 'none' : 'start')};
+  scroll-snap-stop: ${({ $pageScroll }) => ($pageScroll ? 'normal' : 'always')};
 `;
 
 const LandingContent = styled.div`
@@ -64,23 +72,24 @@ const LandingContent = styled.div`
   }
 `;
 
-const LayoutContent = styled.div`
+const LayoutContent = styled.div<{ $pageScroll: boolean }>`
   width: 100%;
   min-height: 0;
   height: auto;
-  flex: 1 1 0;
+  flex: ${({ $pageScroll }) => ($pageScroll ? '0 0 auto' : '1 1 0')};
   padding-top: 10dvh;
   background-color: ${COLORS.primary};
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  justify-content: ${({ $pageScroll }) =>
+    $pageScroll ? 'flex-start' : 'center'};
+  overflow: ${({ $pageScroll }) => ($pageScroll ? 'visible' : 'hidden')};
   box-sizing: border-box;
 
   > * {
     width: 100%;
-    height: 100%;
+    height: ${({ $pageScroll }) => ($pageScroll ? 'auto' : '100%')};
     min-height: 0;
   }
 
@@ -94,22 +103,28 @@ const Layout = () => {
   const isMobile = useIsMobile();
   const isLanding = location.pathname === '/' && !isMobile;
   const lockContactMobileScroll = isMobile && location.pathname === '/contact';
+  // Desktop work: one continuous page scroll (nav + grid + footer).
+  const isWorkPageScroll = !isMobile && location.pathname === '/work';
 
   return (
-    <LayoutContainer data-layout-scroll $lockScroll={lockContactMobileScroll}>
-      <PageViewport $isLanding={isLanding}>
+    <LayoutContainer
+      data-layout-scroll
+      $lockScroll={lockContactMobileScroll}
+      $pageScroll={isWorkPageScroll}
+    >
+      <PageViewport $isLanding={isLanding} $pageScroll={isWorkPageScroll}>
         <Nav onLanding={isLanding} />
         {isLanding ? (
           <LandingContent>
             <Outlet />
           </LandingContent>
         ) : (
-          <LayoutContent>
+          <LayoutContent $pageScroll={isWorkPageScroll}>
             <Outlet />
           </LayoutContent>
         )}
       </PageViewport>
-      {!lockContactMobileScroll && <Footer />}
+      {!lockContactMobileScroll && <Footer attached={isWorkPageScroll} />}
     </LayoutContainer>
   );
 };
