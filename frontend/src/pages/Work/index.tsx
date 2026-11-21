@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Loading } from '../../components/Loading';
-import { useGetProjects } from '../../queries/useGetProjects';
+import { useGetProjects, type ProjectType } from '../../queries/useGetProjects';
 import {
   buildSanityImageSrcSet,
   getSanityImageUrl,
@@ -16,6 +16,23 @@ import {
 } from './styles';
 
 const GRID_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.grid };
+const GALLERY_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.gallery };
+
+const prefetchedGalleryUrls = new Set<string>();
+
+function prefetchProjectGallery(project: ProjectType) {
+  const firstImages = project.images?.slice(0, 2) ?? [];
+
+  firstImages.forEach((image) => {
+    const src = getSanityImageUrl(image, GALLERY_IMAGE_OPTIONS);
+    if (!src || prefetchedGalleryUrls.has(src)) return;
+
+    prefetchedGalleryUrls.add(src);
+    const preload = new Image();
+    preload.decoding = 'async';
+    preload.src = src;
+  });
+}
 
 function Work() {
   const navigate = useNavigate();
@@ -71,6 +88,8 @@ function Work() {
           <ProjectCard
             key={project._id}
             $index={index}
+            onMouseEnter={() => prefetchProjectGallery(project)}
+            onFocus={() => prefetchProjectGallery(project)}
             onClick={() => navigate(`/work/${project.slug.current}`)}
           >
             <ProjectImage
