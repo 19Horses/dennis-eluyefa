@@ -11,7 +11,7 @@ export const AboutContainer = styled.div`
   flex-direction: row;
   align-items: stretch;
   gap: 0.8rem;
-  padding: 0.8rem 0.8rem 0;
+  padding: 0.8rem;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -75,12 +75,17 @@ export const ClientContainer = styled.div`
   justify-self: flex-end;
   background-color: ${COLORS.secondary};
   box-sizing: border-box;
-  padding: 0.8rem;
-  margin-bottom: 0.8rem;
+  padding: 0.8rem 0.8rem 0;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: none;
+  scrollbar-width: none;
   animation: ${fadeIn} 0.6s ease-out 0.45s both;
   transition: all 0.3s ease-in-out;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (max-width: 768px) {
     flex: 0 0 100%;
@@ -92,7 +97,6 @@ export const ClientContainer = styled.div`
     align-items: center;
     justify-content: center;
     padding: 1.5rem 1.1rem;
-    margin-bottom: 0;
     overflow: hidden;
     touch-action: pan-y;
     scroll-snap-align: start;
@@ -119,7 +123,7 @@ export const QuoteContainer = styled.div`
   max-width: 100%;
   align-self: stretch;
   height: auto;
-  min-height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -160,7 +164,6 @@ export const ImageContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 0.8rem;
   animation: ${fadeIn} 0.6s ease-out 0.3s both;
 
   @media (max-width: 768px) {
@@ -170,7 +173,6 @@ export const ImageContainer = styled.div`
     max-height: 100%;
     min-width: 0;
     width: 100%;
-    margin-bottom: 0;
     touch-action: pan-y;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -264,14 +266,16 @@ export const ClientsList = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.35rem;
-  overflow: auto;
-  padding-right: 0.1rem;
+  overflow: visible;
+  padding: 0 0.1rem 0.8rem 0;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-items: center;
     overflow: visible;
     max-height: none;
+    padding: 0;
     gap: 0.7rem 0.9rem;
   }
 
