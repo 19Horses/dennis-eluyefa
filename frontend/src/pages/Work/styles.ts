@@ -11,7 +11,6 @@ import {
 export const WORK_EXIT_MS = 450;
 
 export const WorkWrapper = styled.div<{
-  $fadeTop: number;
   $fadeBottom: number;
 }>`
   position: relative;
@@ -19,27 +18,16 @@ export const WorkWrapper = styled.div<{
   height: 100%;
   overflow: hidden;
 
-  /* Mobile-only edge fades — desktop work uses page scroll with no header shadow */
-  &::before,
+  /* Mobile-only bottom edge fade — no top header shadow */
   &::after {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
+    bottom: 0;
     z-index: 2;
     pointer-events: none;
     transition: opacity 0.3s ease, height 0.3s ease;
-  }
-
-  &::before {
-    top: 0;
-    background: linear-gradient(to bottom, ${COLORS.primary}, transparent);
-    opacity: ${({ $fadeTop }) => $fadeTop / 1.4};
-    height: ${({ $fadeTop }) => $fadeTop * 6}%;
-  }
-
-  &::after {
-    bottom: 0;
     background: linear-gradient(to top, ${COLORS.primary}, transparent);
     opacity: ${({ $fadeBottom }) => $fadeBottom / 1.4};
     height: ${({ $fadeBottom }) => $fadeBottom * 6}%;
@@ -49,7 +37,6 @@ export const WorkWrapper = styled.div<{
     height: auto;
     overflow: visible;
 
-    &::before,
     &::after {
       display: none;
     }
@@ -132,6 +119,7 @@ export const ProjectCard = styled.div<{
   $index?: number;
   $exitHide?: boolean;
   $exitKeep?: boolean;
+  $exitSelected?: boolean;
 }>`
   width: 100%;
   aspect-ratio: 4 / 5;
@@ -148,13 +136,37 @@ export const ProjectCard = styled.div<{
       pointer-events: none;
     `}
 
+  ${({ $exitKeep, $exitSelected }) =>
+    ($exitKeep || $exitSelected) &&
+    css`
+      pointer-events: none;
+      z-index: 2;
+
+      &::before {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      ${ProjectImage} {
+        /* Hold a mild scale so the card doesn’t grow while fading out */
+        transform: scale(0.98);
+      }
+
+      ${ProjectTitle} {
+        opacity: 1;
+      }
+    `}
+
   ${({ $exitKeep }) =>
     $exitKeep &&
     css`
       animation: none;
       opacity: 1;
-      pointer-events: none;
-      z-index: 2;
+    `}
+
+  ${({ $exitSelected }) =>
+    $exitSelected &&
+    css`
+      animation: ${fadeOut} ${WORK_EXIT_MS / 1000}s ease forwards;
     `}
 
   &::before {
@@ -183,22 +195,6 @@ export const ProjectCard = styled.div<{
       opacity: 1;
     }
   }
-
-  ${({ $exitKeep }) =>
-    $exitKeep &&
-    css`
-      &::before {
-        background-color: rgba(0, 0, 0, 0.5);
-      }
-
-      ${ProjectImage} {
-        transform: scale(0.95);
-      }
-
-      ${ProjectTitle} {
-        opacity: 1;
-      }
-    `}
 `;
 
 export const OverlayRoot = styled.div<{ $exiting?: boolean }>`

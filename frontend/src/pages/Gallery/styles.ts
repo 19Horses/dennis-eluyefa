@@ -72,7 +72,7 @@ export const ScatterImage = styled.img<{
   position: absolute;
   width: ${({ $width }) => $width}px;
   height: auto;
-  max-width: min(90vw, 420px);
+  max-width: min(90vw, 380px);
   display: block;
   cursor: ${({ $dragging }) => ($dragging ? 'grabbing' : 'grab')};
   opacity: 0;

@@ -46,7 +46,6 @@ function Work() {
   const containerRef = useRef<HTMLDivElement>(null);
   const exitingRef = useRef(false);
   const exitTimersRef = useRef<number[]>([]);
-  const [fadeTop, setFadeTop] = useState(0);
   const [fadeBottom, setFadeBottom] = useState(0);
   const [exitingSlug, setExitingSlug] = useState<string | null>(null);
   /** `others` = fade siblings; `selected` = then fade the chosen card */
@@ -66,9 +65,8 @@ function Work() {
   const overlayOpen = isMobile && Boolean(activeSlug);
 
   const updateFade = useCallback(() => {
-    // Desktop work scrolls the page; fades are mobile-only.
+    // Desktop work scrolls the page; bottom fade is mobile-only.
     if (!isMobile) {
-      setFadeTop(0);
       setFadeBottom(0);
       return;
     }
@@ -78,20 +76,17 @@ function Work() {
 
     const ramp = 10;
     const min = 0.25;
-    const distTop = el.scrollTop;
     const distBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
 
     const intensity = (dist: number) =>
       Math.min(1, min + ((1 - min) * Math.min(dist, ramp)) / ramp);
 
-    setFadeTop(intensity(distTop));
     setFadeBottom(intensity(distBottom));
   }, [isMobile]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el || !isMobile) {
-      setFadeTop(0);
       setFadeBottom(0);
       return;
     }
@@ -108,21 +103,24 @@ function Work() {
     };
   }, [updateFade, data, isMobile]);
 
+  const resetExitAnimation = useCallback(() => {
+    exitTimersRef.current.forEach((id) => window.clearTimeout(id));
+    exitTimersRef.current = [];
+    exitingRef.current = false;
+    setExitingSlug(null);
+    setExitPhase(null);
+  }, []);
+
   const closeOverlay = useCallback(() => {
     const next = new URLSearchParams(searchParams);
     next.delete(PROJECT_QUERY_KEY);
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
+    // Restore grid after overlay exit so cards can fade back in.
+    resetExitAnimation();
+  }, [resetExitAnimation, searchParams, setSearchParams]);
 
   const openProject = useCallback(
     (slug: string) => {
-      if (isMobile) {
-        const next = new URLSearchParams(searchParams);
-        next.set(PROJECT_QUERY_KEY, slug);
-        setSearchParams(next, { replace: false });
-        return;
-      }
-
       if (exitingRef.current) return;
       exitingRef.current = true;
       setExitingSlug(slug);
@@ -132,11 +130,18 @@ function Work() {
         setExitPhase('selected');
       }, WORK_EXIT_MS);
 
-      const navigateId = window.setTimeout(() => {
+      const finishId = window.setTimeout(() => {
+        if (isMobile) {
+          const next = new URLSearchParams(searchParams);
+          next.set(PROJECT_QUERY_KEY, slug);
+          setSearchParams(next, { replace: false });
+          return;
+        }
+
         navigate(`/work/${slug}`);
       }, WORK_EXIT_MS * 2);
 
-      exitTimersRef.current = [fadeSelectedId, navigateId];
+      exitTimersRef.current = [fadeSelectedId, finishId];
     },
     [isMobile, navigate, searchParams, setSearchParams]
   );
@@ -150,14 +155,13 @@ function Work() {
   }
 
   return (
-    <WorkWrapper $fadeTop={fadeTop} $fadeBottom={fadeBottom}>
+    <WorkWrapper $fadeBottom={fadeBottom}>
       <WorkContainer ref={containerRef}>
         {data?.map((project, index) => {
           const slug = project.slug.current;
           const exitKeep = exitingSlug === slug && exitPhase === 'others';
-          const exitHide =
-            Boolean(exitingSlug) &&
-            (exitingSlug !== slug || exitPhase === 'selected');
+          const exitSelected = exitingSlug === slug && exitPhase === 'selected';
+          const exitHide = Boolean(exitingSlug) && exitingSlug !== slug;
 
           return (
             <ProjectCard
@@ -165,6 +169,7 @@ function Work() {
               $index={index}
               $exitHide={exitHide}
               $exitKeep={exitKeep}
+              $exitSelected={exitSelected}
               onMouseEnter={() => prefetchProjectGallery(project)}
               onFocus={() => prefetchProjectGallery(project)}
               onClick={() => openProject(slug)}

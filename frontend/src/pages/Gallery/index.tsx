@@ -25,8 +25,8 @@ const SCATTER_OPTIONS = { width: IMAGE_WIDTHS.scatter };
 const MIN_DISPLAY_WIDTH = 140;
 const MAX_DISPLAY_WIDTH = 280;
 /** Pinch zoom limits — adjust as needed */
-const PINCH_MIN_WIDTH = 96;
-const PINCH_MAX_WIDTH = 420;
+const PINCH_MIN_WIDTH = 112;
+const PINCH_MAX_WIDTH = 380;
 
 const getScatterPadding = (container: HTMLElement) => {
   const styles = window.getComputedStyle(container);
