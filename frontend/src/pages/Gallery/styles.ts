@@ -12,15 +12,27 @@ const scatterFadeIn = keyframes`
 
 export const GalleryContainer = styled.div`
   position: relative;
+  /* Keep scatter z-index inside this context so images stay under mobile menu (z 20/30) */
+  z-index: 0;
+  isolation: isolate;
   width: 100%;
   height: 100%;
   min-height: 0;
-  padding: 1rem;
+  /* Match WorkContainer inset */
+  padding: 0.5rem;
   box-sizing: border-box;
   overflow: hidden;
   background-color: ${COLORS.primary};
   touch-action: none;
   user-select: none;
+
+  @media (max-width: 1024px) {
+    padding: 0.6rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.4rem;
+  }
 `;
 
 export const ScatterImage = styled.img<{
@@ -55,9 +67,10 @@ export const ScatterImage = styled.img<{
 
 export const DecelToggle = styled.button<{ $on: boolean }>`
   position: absolute;
-  left: 1rem;
-  bottom: 1rem;
-  z-index: 30;
+  left: 0.5rem;
+  bottom: 0.5rem;
+  /* High within gallery only — isolation keeps this under the mobile menu */
+  z-index: 999;
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
