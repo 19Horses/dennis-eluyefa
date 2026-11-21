@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { useGetProject } from '../../queries/useGetProjects';
 import {
   buildSanityImageSrcSet,
@@ -7,6 +8,7 @@ import {
 } from '../../sanityImage';
 import {
   OverlayCloseButton,
+  OverlayCounter,
   OverlayDim,
   OverlayRoot,
   OverlayScroller,
@@ -14,6 +16,7 @@ import {
   OverlaySlideImage,
   OverlayStage,
 } from './styles';
+
 const GALLERY_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.gallery };
 const EXIT_SLIDE_MS = 450;
 const EXIT_STAGGER_MS = 80;
@@ -44,9 +47,11 @@ type ProjectOverlayProps = {
 };
 
 export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
+  const isMobile = useIsMobile();
   const { data, isLoading, isError } = useGetProject(slug);
   const [imagesReady, setImagesReady] = useState(false);
   const [exiting, setExiting] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -64,6 +69,7 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
   useEffect(() => {
     setImagesReady(false);
     setExiting(false);
+    setCurrentIndex(0);
     exitStartedRef.current = false;
     if (scrollerRef.current) {
       scrollerRef.current.scrollLeft = 0;
@@ -93,6 +99,8 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
   }, [count, images, slug]);
 
   useEffect(() => {
+    if (isMobile) return;
+
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
@@ -105,7 +113,7 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
 
     scroller.addEventListener('wheel', onWheel, { passive: false });
     return () => scroller.removeEventListener('wheel', onWheel);
-  }, [count, slug, exiting]);
+  }, [count, slug, exiting, isMobile]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -120,6 +128,14 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
       window.removeEventListener('project-overlay-close', onNavClose);
     };
   }, [requestClose]);
+
+  const handleMobileScroll = useCallback(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || scroller.clientWidth === 0) return;
+
+    const nextIndex = Math.round(scroller.scrollLeft / scroller.clientWidth);
+    setCurrentIndex(Math.min(Math.max(nextIndex, 0), Math.max(count - 1, 0)));
+  }, [count]);
 
   const exitDurationMs =
     EXIT_SLIDE_MS + Math.max(0, count - 1) * EXIT_STAGGER_MS;
@@ -140,17 +156,23 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
       <OverlayDim
         $exiting={exiting}
         $exitDurationMs={exitDurationMs}
+        $opaque={isMobile}
         onClick={requestClose}
       />
 
       <OverlayStage
+        $mobile={isMobile}
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label={data?.title ?? 'Project images'}
       >
         {isLoading || isError ? null : (
-          <OverlayScroller ref={scrollerRef}>
+          <OverlayScroller
+            ref={scrollerRef}
+            $mobile={isMobile}
+            onScroll={isMobile ? handleMobileScroll : undefined}
+          >
             {images.map((img, index) => {
               const src = getSanityImageUrl(img, GALLERY_IMAGE_OPTIONS);
               const srcSet = buildSanityImageSrcSet(img, GALLERY_IMAGE_OPTIONS);
@@ -161,9 +183,11 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
                   $index={index}
                   $reveal={imagesReady}
                   $exiting={exiting}
+                  $mobile={isMobile}
                 >
                   {src && (
                     <OverlaySlideImage
+                      $mobile={isMobile}
                       src={src}
                       srcSet={srcSet}
                       alt={data?.title ?? ''}
@@ -181,6 +205,7 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
       <OverlayCloseButton
         type="button"
         $exiting={exiting}
+        $mobile={isMobile}
         aria-label="Close project"
         onClick={(event) => {
           event.stopPropagation();
@@ -189,6 +214,12 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
       >
         ×
       </OverlayCloseButton>
+
+      {isMobile && count > 0 ? (
+        <OverlayCounter $exiting={exiting}>
+          {currentIndex + 1}/{count}
+        </OverlayCounter>
+      ) : null}
     </OverlayRoot>
   );
 }

@@ -73,7 +73,7 @@ export default function Project() {
   }, [slug]);
 
   useEffect(() => {
-    if (isMobile || count === 0) {
+    if (count === 0) {
       setImagesReady(true);
       return;
     }
@@ -94,7 +94,7 @@ export default function Project() {
     return () => {
       cancelled = true;
     };
-  }, [isMobile, count, images, slug]);
+  }, [count, images, slug]);
 
   useEffect(() => {
     if (isMobile) return;
@@ -194,13 +194,17 @@ export default function Project() {
               const srcSet = buildSanityImageSrcSet(img, GALLERY_IMAGE_OPTIONS);
 
               return (
-                <MobileSlide key={img._key}>
+                <MobileSlide
+                  key={img._key}
+                  $index={index}
+                  $reveal={imagesReady}
+                >
                   {src && (
                     <MobileSlideImage
                       src={src}
                       srcSet={srcSet}
                       alt={data?.title ?? ''}
-                      loading={index === 0 ? 'eager' : 'lazy'}
+                      loading="eager"
                       draggable={false}
                     />
                   )}

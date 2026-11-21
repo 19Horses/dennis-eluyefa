@@ -137,7 +137,7 @@ export const MobileScroller = styled.div`
   }
 `;
 
-export const MobileSlide = styled.div`
+export const MobileSlide = styled.div<{ $index: number; $reveal: boolean }>`
   flex: 0 0 100%;
   width: 100%;
   height: 100%;
@@ -148,6 +148,18 @@ export const MobileSlide = styled.div`
   justify-content: center;
   box-sizing: border-box;
   padding: 3.5rem 1rem 3.5rem;
+  opacity: 0;
+  animation: ${({ $reveal }) => ($reveal ? fadeIn : 'none')};
+  animation-duration: 0.65s;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+  animation-delay: ${({ $reveal, $index }) =>
+    $reveal ? `${$index * 0.1}s` : '0s'};
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: ${({ $reveal }) => ($reveal ? 1 : 0)};
+    animation: none;
+  }
 `;
 
 export const MobileSlideImage = styled.img`

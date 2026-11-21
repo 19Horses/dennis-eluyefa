@@ -42,10 +42,12 @@ const FooterContainer = styled.footer<{
 
 const LinksRow = styled.div<{ $isMobileNav: boolean }>`
   display: ${({ $isMobileNav }) => ($isMobileNav ? 'flex' : 'contents')};
+  flex-direction: ${({ $isMobileNav }) => ($isMobileNav ? 'column' : 'row')};
   width: ${({ $isMobileNav }) => ($isMobileNav ? '100%' : 'auto')};
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: ${({ $isMobileNav }) =>
+    $isMobileNav ? 'center' : 'space-between'};
+  gap: ${({ $isMobileNav }) => ($isMobileNav ? '0.65rem' : '1rem')};
   box-sizing: border-box;
   padding: ${({ $isMobileNav }) => ($isMobileNav ? '0 1.25rem' : '0')};
 `;
@@ -58,7 +60,8 @@ const SocialLinks = styled.div<{ $isMobileNav: boolean }>`
     $isMobileNav ? 'none' : 'translateY(-50%)'};
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: ${({ $isMobileNav }) =>
+    $isMobileNav ? 'center' : 'flex-start'};
   gap: 0.5rem;
 `;
 
@@ -122,8 +125,8 @@ const GalleryLink = styled(Link)<{ $isMobileNav: boolean }>`
   line-height: 1.2;
   cursor: pointer;
   transition: opacity 0.2s ease;
-  margin-left: ${({ $isMobileNav }) => ($isMobileNav ? 'auto' : '0')};
-  text-align: right;
+  margin-left: 0;
+  text-align: ${({ $isMobileNav }) => ($isMobileNav ? 'center' : 'right')};
   flex-shrink: 0;
 
   &:hover {
@@ -140,6 +143,9 @@ const Footer = ({ isMobileNav = false, attached = false }: FooterProps) => {
   return (
     <FooterContainer $isMobileNav={isMobileNav} $attached={attached}>
       <LinksRow $isMobileNav={isMobileNav}>
+        <GalleryLink to="/gallery" $isMobileNav={isMobileNav}>
+          gallery
+        </GalleryLink>
         <SocialLinks $isMobileNav={isMobileNav}>
           <SocialLink
             href="https://www.instagram.com/denden_man/"
@@ -157,9 +163,6 @@ const Footer = ({ isMobileNav = false, attached = false }: FooterProps) => {
             tiktok
           </SocialLink>
         </SocialLinks>
-        <GalleryLink to="/gallery" $isMobileNav={isMobileNav}>
-          gallery
-        </GalleryLink>
       </LinksRow>
       <Copyright $isMobileNav={isMobileNav}>
         © Dennis Eluyefa {new Date().getFullYear()}. All rights reserved.

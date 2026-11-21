@@ -60,7 +60,8 @@ function Work() {
   const [viewMode, setViewMode] = useState<1 | 2>(readStoredViewMode);
 
   const activeSlug = searchParams.get(PROJECT_QUERY_KEY);
-  const overlayOpen = !isMobile && Boolean(activeSlug);
+  // Desktop mode 2 + all mobile opens stay on /work with ?project= for a smoother fade.
+  const overlayOpen = Boolean(activeSlug) && (isMobile || viewMode === 2);
 
   const updateFade = useCallback(() => {
     const el = containerRef.current;
@@ -110,7 +111,7 @@ function Work() {
 
   const openProject = useCallback(
     (slug: string) => {
-      if (isMobile || viewMode === 1) {
+      if (!isMobile && viewMode === 1) {
         navigate(`/work/${slug}`);
         return;
       }

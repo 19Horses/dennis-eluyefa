@@ -203,10 +203,12 @@ export const OverlayRoot = styled.div<{ $exiting?: boolean }>`
 export const OverlayDim = styled.div<{
   $exiting?: boolean;
   $exitDurationMs?: number;
+  $opaque?: boolean;
 }>`
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.78);
+  background: ${({ $opaque }) =>
+    $opaque ? COLORS.primary : 'rgba(0, 0, 0, 0.78)'};
   cursor: pointer;
   animation-name: ${({ $exiting }) => ($exiting ? fadeOut : fadeInOpacity)};
   animation-duration: ${({ $exiting, $exitDurationMs }) =>
@@ -215,40 +217,43 @@ export const OverlayDim = styled.div<{
   animation-fill-mode: both;
 `;
 
-export const OverlayStage = styled.div`
+export const OverlayStage = styled.div<{ $mobile?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
+  bottom: ${({ $mobile }) => ($mobile ? '0' : 'auto')};
   z-index: 1;
   display: flex;
   align-items: stretch;
   justify-content: center;
   /* Match WorkContainer padding so overlay images share the same inset */
-  padding: 0.5rem;
+  padding: ${({ $mobile }) => ($mobile ? '0' : '0.5rem')};
   box-sizing: border-box;
-  height: 80%;
+  height: ${({ $mobile }) => ($mobile ? '100%' : '80%')};
   min-height: 0;
   cursor: default;
 
   @media (max-width: 1024px) {
-    padding: 0.6rem;
+    padding: ${({ $mobile }) => ($mobile ? '0' : '0.6rem')};
   }
 `;
 
-export const OverlayScroller = styled.div`
+export const OverlayScroller = styled.div<{ $mobile?: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: stretch;
   /* Match WorkContainer gap */
-  gap: 0.5rem;
+  gap: ${({ $mobile }) => ($mobile ? '0' : '0.5rem')};
   width: 100%;
   height: 100%;
   padding: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  scroll-behavior: auto;
-  overscroll-behavior: none;
+  scroll-behavior: ${({ $mobile }) => ($mobile ? 'smooth' : 'auto')};
+  scroll-snap-type: ${({ $mobile }) => ($mobile ? 'x mandatory' : 'none')};
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: ${({ $mobile }) => ($mobile ? 'contain' : 'none')};
   scrollbar-width: none;
   box-sizing: border-box;
 
@@ -257,7 +262,7 @@ export const OverlayScroller = styled.div`
   }
 
   @media (max-width: 1024px) {
-    gap: 0.6rem;
+    gap: ${({ $mobile }) => ($mobile ? '0' : '0.6rem')};
   }
 `;
 
@@ -265,11 +270,18 @@ export const OverlaySlide = styled.div<{
   $index: number;
   $reveal: boolean;
   $exiting: boolean;
+  $mobile?: boolean;
 }>`
-  flex: 0 0 auto;
+  flex: ${({ $mobile }) => ($mobile ? '0 0 100%' : '0 0 auto')};
+  width: ${({ $mobile }) => ($mobile ? '100%' : 'auto')};
   height: 100%;
   display: flex;
-  align-items: stretch;
+  align-items: ${({ $mobile }) => ($mobile ? 'center' : 'stretch')};
+  justify-content: ${({ $mobile }) => ($mobile ? 'center' : 'flex-start')};
+  box-sizing: border-box;
+  padding: ${({ $mobile }) => ($mobile ? '3.5rem 1rem' : '0')};
+  scroll-snap-align: ${({ $mobile }) => ($mobile ? 'center' : 'none')};
+  scroll-snap-stop: ${({ $mobile }) => ($mobile ? 'always' : 'normal')};
   opacity: ${({ $exiting }) => ($exiting ? 1 : 0)};
   animation-name: ${({ $exiting, $reveal }) =>
     $exiting ? fadeOutDown : $reveal ? fadeIn : 'none'};
@@ -285,10 +297,13 @@ export const OverlaySlide = styled.div<{
     animation: none;
   }
 `;
-export const OverlaySlideImage = styled.img`
-  height: 100%;
-  width: auto;
-  max-width: none;
+
+export const OverlaySlideImage = styled.img<{ $mobile?: boolean }>`
+  height: ${({ $mobile }) => ($mobile ? 'auto' : '100%')};
+  width: ${({ $mobile }) => ($mobile ? 'auto' : 'auto')};
+  max-width: ${({ $mobile }) => ($mobile ? '100%' : 'none')};
+  max-height: ${({ $mobile }) => ($mobile ? '100%' : 'none')};
+  object-fit: ${({ $mobile }) => ($mobile ? 'contain' : 'initial')};
   display: block;
   user-select: none;
   -webkit-user-drag: none;
@@ -299,19 +314,30 @@ export const OverlaySlideImage = styled.img`
   }
 `;
 
-export const OverlayCloseButton = styled.button<{ $exiting?: boolean }>`
+export const OverlayCloseButton = styled.button<{
+  $exiting?: boolean;
+  $mobile?: boolean;
+}>`
   position: absolute;
-  right: 1.25rem;
-  bottom: 0.85rem;
+  right: ${({ $mobile }) => ($mobile ? '0.75rem' : '1.25rem')};
+  top: ${({ $mobile }) => ($mobile ? '0.65rem' : 'auto')};
+  bottom: ${({ $mobile }) => ($mobile ? 'auto' : '0.85rem')};
   z-index: 5;
   border: 0;
   padding: 0;
+  width: ${({ $mobile }) => ($mobile ? '2.25rem' : 'auto')};
+  height: ${({ $mobile }) => ($mobile ? '2.25rem' : 'auto')};
+  display: ${({ $mobile }) => ($mobile ? 'inline-flex' : 'block')};
+  align-items: center;
+  justify-content: center;
   background: transparent;
   color: ${COLORS.secondary};
   font-family: 'Helvetica Neue Bold', sans-serif;
-  font-size: clamp(2.8rem, 5vw, 4.5rem);
+  /* Mobile: match burger control (~2.25rem); desktop keeps large bottom × */
+  font-size: ${({ $mobile }) =>
+    $mobile ? '2.25rem' : 'clamp(2.8rem, 5vw, 4.5rem)'};
   font-weight: bold;
-  line-height: 0.8;
+  line-height: 1;
   cursor: pointer;
   opacity: ${({ $exiting }) => ($exiting ? 0 : 1)};
   transition: opacity 0.45s ease;
@@ -323,5 +349,27 @@ export const OverlayCloseButton = styled.button<{ $exiting?: boolean }>`
   &:focus-visible {
     outline: 1px solid ${COLORS.secondary};
     outline-offset: 3px;
+  }
+`;
+
+export const OverlayCounter = styled.p<{ $exiting?: boolean }>`
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 5;
+  margin: 0;
+  font-family: 'Helvetica Neue Bold', sans-serif;
+  font-size: 1.2rem;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: ${COLORS.secondary};
+  pointer-events: none;
+  opacity: ${({ $exiting }) => ($exiting ? 0 : 1)};
+  transition: opacity 0.45s ease;
+
+  &::selection {
+    background-color: ${COLORS.secondary};
+    color: ${COLORS.tertiary};
   }
 `;
