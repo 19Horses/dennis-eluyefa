@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router';
+import { useEffect, useState, type MouseEvent } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router';
 import { styled } from 'styled-components';
 import { COLORS } from '../constants';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -243,11 +243,22 @@ const Logo = styled.img<{ $visible: boolean }>`
 
 const Nav = ({ onLanding = false }: NavProps) => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isActive = (path: string) => location.pathname === path;
+  const isOverlayProject =
+    location.pathname === '/work' && Boolean(searchParams.get('project'));
   const isProject =
-    location.pathname.startsWith('/work/') && location.pathname !== '/work';
+    (location.pathname.startsWith('/work/') && location.pathname !== '/work') ||
+    isOverlayProject;
+
+  const handleWorkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!isOverlayProject) return;
+    // Keep overlay mounted so it can run the same exit fade as the × button.
+    event.preventDefault();
+    window.dispatchEvent(new Event('project-overlay-close'));
+  };
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -285,6 +296,7 @@ const Nav = ({ onLanding = false }: NavProps) => {
           $isProject={isProject}
           $onLanding={onLanding}
           $index={0}
+          onClick={handleWorkClick}
         >
           work
         </NavLink>

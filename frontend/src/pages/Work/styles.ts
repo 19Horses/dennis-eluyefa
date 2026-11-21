@@ -1,6 +1,11 @@
 import { styled } from 'styled-components';
 import { COLORS } from '../../constants';
-import { fadeIn } from '../../../styles/animations';
+import {
+  fadeIn,
+  fadeInOpacity,
+  fadeOut,
+  fadeOutDown,
+} from '../../../styles/animations';
 
 export const WorkWrapper = styled.div<{
   $fadeTop: number;
@@ -141,5 +146,230 @@ export const ProjectCard = styled.div<{ $index?: number }>`
     ${ProjectTitle} {
       opacity: 1;
     }
+  }
+`;
+
+export const ViewModeToggle = styled.div`
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.85rem;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.35rem 0.4rem;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.55);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const ViewModeButton = styled.button<{ $active: boolean }>`
+  border: 0;
+  padding: 0.35rem 0.7rem;
+  margin: 0;
+  background: transparent;
+  color: ${COLORS.secondary};
+  font-family: 'Helvetica Neue Bold', sans-serif;
+  font-size: 1.35rem;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  opacity: ${({ $active }) => ($active ? 1 : 0.4)};
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 1px solid ${COLORS.secondary};
+    outline-offset: 2px;
+  }
+`;
+
+export const OverlayRoot = styled.div<{ $exiting?: boolean }>`
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: ${({ $exiting }) => ($exiting ? 'none' : 'auto')};
+`;
+
+/* Dim layer only — sibling to images so opacity fades independently */
+export const OverlayDim = styled.div<{
+  $exiting?: boolean;
+  $exitDurationMs?: number;
+  $opaque?: boolean;
+}>`
+  position: absolute;
+  inset: 0;
+  background: ${({ $opaque }) =>
+    $opaque ? COLORS.primary : 'rgba(0, 0, 0, 0.78)'};
+  cursor: pointer;
+  animation-name: ${({ $exiting }) => ($exiting ? fadeOut : fadeInOpacity)};
+  animation-duration: ${({ $exiting, $exitDurationMs }) =>
+    $exiting ? `${($exitDurationMs ?? 450) / 1000}s` : '0.35s'};
+  animation-timing-function: ease;
+  animation-fill-mode: both;
+`;
+
+export const OverlayStage = styled.div<{ $mobile?: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: ${({ $mobile }) => ($mobile ? '0' : 'auto')};
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  /* Match WorkContainer padding so overlay images share the same inset */
+  padding: ${({ $mobile }) => ($mobile ? '0' : '0.5rem')};
+  box-sizing: border-box;
+  height: ${({ $mobile }) => ($mobile ? '100%' : '80%')};
+  min-height: 0;
+  cursor: default;
+
+  @media (max-width: 1024px) {
+    padding: ${({ $mobile }) => ($mobile ? '0' : '0.6rem')};
+  }
+`;
+
+export const OverlayScroller = styled.div<{ $mobile?: boolean }>`
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  /* Match WorkContainer gap */
+  gap: ${({ $mobile }) => ($mobile ? '0' : '0.5rem')};
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: ${({ $mobile }) => ($mobile ? 'smooth' : 'auto')};
+  scroll-snap-type: ${({ $mobile }) => ($mobile ? 'x mandatory' : 'none')};
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: ${({ $mobile }) => ($mobile ? 'contain' : 'none')};
+  scrollbar-width: none;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 1024px) {
+    gap: ${({ $mobile }) => ($mobile ? '0' : '0.6rem')};
+  }
+`;
+
+export const OverlaySlide = styled.div<{
+  $index: number;
+  $reveal: boolean;
+  $exiting: boolean;
+  $mobile?: boolean;
+}>`
+  flex: ${({ $mobile }) => ($mobile ? '0 0 100%' : '0 0 auto')};
+  width: ${({ $mobile }) => ($mobile ? '100%' : 'auto')};
+  height: 100%;
+  display: flex;
+  align-items: ${({ $mobile }) => ($mobile ? 'center' : 'stretch')};
+  justify-content: ${({ $mobile }) => ($mobile ? 'center' : 'flex-start')};
+  box-sizing: border-box;
+  padding: ${({ $mobile }) => ($mobile ? '3.5rem 1rem' : '0')};
+  scroll-snap-align: ${({ $mobile }) => ($mobile ? 'center' : 'none')};
+  scroll-snap-stop: ${({ $mobile }) => ($mobile ? 'always' : 'normal')};
+  opacity: ${({ $exiting }) => ($exiting ? 1 : 0)};
+  animation-name: ${({ $exiting, $reveal }) =>
+    $exiting ? fadeOutDown : $reveal ? fadeIn : 'none'};
+  animation-duration: ${({ $exiting }) => ($exiting ? '0.45s' : '0.65s')};
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+  /* Exit mirrors entrance stagger so slides leave as their own layer */
+  animation-delay: ${({ $exiting, $reveal, $index }) =>
+    $exiting ? `${$index * 0.08}s` : $reveal ? `${$index * 0.1}s` : '0s'};
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: ${({ $reveal, $exiting }) => ($reveal && !$exiting ? 1 : 0)};
+    animation: none;
+  }
+`;
+
+export const OverlaySlideImage = styled.img<{ $mobile?: boolean }>`
+  height: ${({ $mobile }) => ($mobile ? 'auto' : '100%')};
+  width: ${({ $mobile }) => ($mobile ? 'auto' : 'auto')};
+  max-width: ${({ $mobile }) => ($mobile ? '100%' : 'none')};
+  max-height: ${({ $mobile }) => ($mobile ? '100%' : 'none')};
+  object-fit: ${({ $mobile }) => ($mobile ? 'contain' : 'initial')};
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+
+  &::selection {
+    background-color: transparent;
+  }
+`;
+
+export const OverlayCloseButton = styled.button<{
+  $exiting?: boolean;
+  $mobile?: boolean;
+}>`
+  position: absolute;
+  right: ${({ $mobile }) => ($mobile ? '0.75rem' : '1.25rem')};
+  top: ${({ $mobile }) => ($mobile ? '0.65rem' : 'auto')};
+  bottom: ${({ $mobile }) => ($mobile ? 'auto' : '0.85rem')};
+  z-index: 5;
+  border: 0;
+  padding: 0;
+  width: ${({ $mobile }) => ($mobile ? '2.25rem' : 'auto')};
+  height: ${({ $mobile }) => ($mobile ? '2.25rem' : 'auto')};
+  display: ${({ $mobile }) => ($mobile ? 'inline-flex' : 'block')};
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: ${COLORS.secondary};
+  font-family: 'Helvetica Neue Bold', sans-serif;
+  /* Mobile: match burger control (~2.25rem); desktop keeps large bottom × */
+  font-size: ${({ $mobile }) =>
+    $mobile ? '2.25rem' : 'clamp(2.8rem, 5vw, 4.5rem)'};
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  opacity: ${({ $exiting }) => ($exiting ? 0 : 1)};
+  transition: opacity 0.45s ease;
+
+  &:hover {
+    opacity: ${({ $exiting }) => ($exiting ? 0 : 0.7)};
+  }
+
+  &:focus-visible {
+    outline: 1px solid ${COLORS.secondary};
+    outline-offset: 3px;
+  }
+`;
+
+export const OverlayCounter = styled.p<{ $exiting?: boolean }>`
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 5;
+  margin: 0;
+  font-family: 'Helvetica Neue Bold', sans-serif;
+  font-size: 1.2rem;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: ${COLORS.secondary};
+  pointer-events: none;
+  opacity: ${({ $exiting }) => ($exiting ? 0 : 1)};
+  transition: opacity 0.45s ease;
+
+  &::selection {
+    background-color: ${COLORS.secondary};
+    color: ${COLORS.tertiary};
   }
 `;

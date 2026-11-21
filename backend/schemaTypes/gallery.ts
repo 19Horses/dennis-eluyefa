@@ -9,6 +9,7 @@ export const galleryType = defineType({
       name: 'images',
       type: 'array',
       of: [defineArrayMember({type: 'image'})],
+      options: {layout: 'grid'},
       validation: (rule) => rule.required().min(1),
     }),
   ],

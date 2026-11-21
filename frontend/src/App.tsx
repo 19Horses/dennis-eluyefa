@@ -7,8 +7,40 @@ import { About, Contact, Gallery, Home, Project, Work } from './pages';
 
 const queryClient = new QueryClient();
 
+const SPLASH_STORAGE_KEY = 'dennis-eluyefa-splash-last-shown';
+const SPLASH_INTERVAL_MS = 6 * 60 * 60 * 1000;
+
+function shouldShowSplash() {
+  try {
+    const raw = window.localStorage.getItem(SPLASH_STORAGE_KEY);
+    if (!raw) return true;
+
+    const lastShownAt = Number(raw);
+    if (!Number.isFinite(lastShownAt)) return true;
+
+    return Date.now() - lastShownAt >= SPLASH_INTERVAL_MS;
+  } catch {
+    return true;
+  }
+}
+
+function markSplashShown() {
+  try {
+    window.localStorage.setItem(SPLASH_STORAGE_KEY, String(Date.now()));
+  } catch {
+    // ignore quota / private mode failures
+  }
+}
+
 const App = () => {
-  const [isSplashComplete, setIsSplashComplete] = useState(false);
+  const [isSplashComplete, setIsSplashComplete] = useState(
+    () => !shouldShowSplash()
+  );
+
+  const handleSplashComplete = () => {
+    markSplashShown();
+    setIsSplashComplete(true);
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -28,7 +60,7 @@ const App = () => {
           </Routes>
         </HashRouter>
       ) : (
-        <SplashScreen onComplete={() => setIsSplashComplete(true)} />
+        <SplashScreen onComplete={handleSplashComplete} />
       )}
     </QueryClientProvider>
   );
