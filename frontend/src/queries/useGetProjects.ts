@@ -38,10 +38,13 @@ const getProjects = async (): Promise<{ result: ProjectType[] }> => {
   return response.data;
 };
 
+export const PROJECTS_QUERY_KEY = ['projects'] as const;
+
 export const useGetProjects = () => {
   return useQuery({
-    queryKey: ['projects'],
+    queryKey: PROJECTS_QUERY_KEY,
     queryFn: getProjects,
+    staleTime: 1000 * 60 * 5,
     select: (res) =>
       res.result?.map((project) => ({
         ...project,
@@ -52,8 +55,11 @@ export const useGetProjects = () => {
 
 export const useGetProject = (slug: string) => {
   return useQuery({
-    queryKey: ['project', slug],
-    queryFn: () => getProjects(),
+    // Share the Work page cache — no second full projects fetch on navigate.
+    queryKey: PROJECTS_QUERY_KEY,
+    queryFn: getProjects,
+    staleTime: 1000 * 60 * 5,
+    enabled: Boolean(slug),
     select: (res) =>
       res.result?.find((project) => project.slug.current === slug) ?? null,
   });

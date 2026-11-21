@@ -11,16 +11,12 @@ import {
 import { Loading } from '../../components/Loading';
 import {
   ProjectContainer,
-  SliderViewport,
-  SliderTrack,
-  Slide,
-  SlideImageContainer,
-  SlideImage,
+  DesktopScroller,
+  DesktopSlide,
+  DesktopSlideImage,
   ProjectMeta,
   ProjectTitle,
   ProjectDate,
-  ClickZoneLeft,
-  ClickZoneRight,
   MobileGallery,
   MobileScroller,
   MobileSlide,
@@ -32,31 +28,111 @@ import {
 
 const GALLERY_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.gallery };
 
+function preloadImage(src: string) {
+  return new Promise<void>((resolve) => {
+    const image = new Image();
+    const settle = () => resolve();
+
+    image.onload = settle;
+    image.onerror = settle;
+    image.src = src;
+
+    if (image.complete) {
+      settle();
+      return;
+    }
+
+    if (typeof image.decode === 'function') {
+      image.decode().then(settle).catch(settle);
+    }
+  });
+}
+
 export default function Project() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { data, isLoading, isError } = useGetProject(slug ?? '');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imagesReady, setImagesReady] = useState(false);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const desktopScrollerRef = useRef<HTMLDivElement | null>(null);
 
   const images = data?.images ?? [];
   const count = images.length;
 
   useEffect(() => {
     setCurrentIndex(0);
+    setImagesReady(false);
     if (scrollerRef.current) {
       scrollerRef.current.scrollLeft = 0;
     }
+    if (desktopScrollerRef.current) {
+      desktopScrollerRef.current.scrollLeft = 0;
+    }
   }, [slug]);
 
-  const handlePrev = useCallback(() => {
-    setCurrentIndex((i) => Math.max(0, i - 1));
-  }, []);
+  useEffect(() => {
+    if (isMobile || count === 0) {
+      setImagesReady(true);
+      return;
+    }
 
-  const handleNext = useCallback(() => {
-    setCurrentIndex((i) => Math.min(count - 1, i + 1));
-  }, [count]);
+    let cancelled = false;
+    setImagesReady(false);
+
+    const urls = images
+      .map((image) => getSanityImageUrl(image, GALLERY_IMAGE_OPTIONS))
+      .filter((src): src is string => Boolean(src));
+
+    Promise.all(urls.map(preloadImage)).then(() => {
+      if (!cancelled) {
+        setImagesReady(true);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isMobile, count, images, slug]);
+
+  useEffect(() => {
+    if (isMobile) return;
+
+    const scroller = desktopScrollerRef.current;
+    if (!scroller) return;
+
+    const onWheel = (event: WheelEvent) => {
+      // Native horizontal gestures pass through.
+      if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+
+      const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+      const atStart = scroller.scrollLeft <= 1;
+      const atEnd = scroller.scrollLeft >= maxScroll - 1;
+      const shouldScrollPage =
+        maxScroll <= 1 ||
+        (event.deltaY > 0 && atEnd) ||
+        (event.deltaY < 0 && atStart);
+
+      // At the gallery edge (or no horizontal overflow): scroll the page
+      // so the footer / previous snap section stays reachable.
+      if (shouldScrollPage) {
+        const layout = document.querySelector<HTMLElement>(
+          '[data-layout-scroll]'
+        );
+        if (!layout) return;
+        event.preventDefault();
+        layout.scrollTop += event.deltaY;
+        return;
+      }
+
+      event.preventDefault();
+      scroller.scrollLeft += event.deltaY;
+    };
+
+    scroller.addEventListener('wheel', onWheel, { passive: false });
+    return () => scroller.removeEventListener('wheel', onWheel);
+  }, [isMobile, count]);
 
   const handleMobileScroll = useCallback(() => {
     const scroller = scrollerRef.current;
@@ -91,12 +167,7 @@ export default function Project() {
               <ProjectDate>{formatDate(data?.date)}</ProjectDate>
             </ProjectMeta>
           </MobileGallery>
-        ) : (
-          <ProjectMeta>
-            <ProjectTitle>{data?.title}</ProjectTitle>
-            <ProjectDate>{formatDate(data?.date)}</ProjectDate>
-          </ProjectMeta>
-        )}
+        ) : null}
       </ProjectContainer>
     );
   }
@@ -146,62 +217,31 @@ export default function Project() {
     );
   }
 
-  const slideOffset = count > 0 ? (currentIndex / count) * 100 : 0;
-
   return (
     <ProjectContainer>
-      <SliderViewport>
-        <SliderTrack
-          $count={count}
-          style={{
-            transform: `translateX(-${slideOffset}%)`,
-          }}
-        >
-          {images.map((img, index) => {
-            const src = getSanityImageUrl(img, GALLERY_IMAGE_OPTIONS);
-            const srcSet = buildSanityImageSrcSet(img, GALLERY_IMAGE_OPTIONS);
-            return (
-              <Slide key={img._key} $count={count}>
-                <SlideImageContainer>
-                  {src && (
-                    <SlideImage
-                      src={src}
-                      srcSet={srcSet}
-                      alt={data?.title ?? ''}
-                      loading={index === 0 ? 'eager' : 'lazy'}
-                    />
-                  )}
-                </SlideImageContainer>
-                {index === 0 && (
-                  <ProjectMeta>
-                    <ProjectTitle>{data?.title}</ProjectTitle>
-                    <ProjectDate>{formatDate(data?.date)}</ProjectDate>
-                  </ProjectMeta>
-                )}
-              </Slide>
-            );
-          })}
-        </SliderTrack>
-      </SliderViewport>
+      <DesktopScroller
+        ref={desktopScrollerRef}
+        aria-label={`${data?.title ?? 'Project'} images`}
+      >
+        {images.map((img, index) => {
+          const src = getSanityImageUrl(img, GALLERY_IMAGE_OPTIONS);
+          const srcSet = buildSanityImageSrcSet(img, GALLERY_IMAGE_OPTIONS);
 
-      {count > 1 && (
-        <>
-          {currentIndex > 0 && (
-            <ClickZoneLeft
-              type="button"
-              onClick={handlePrev}
-              aria-label="Previous image"
-            />
-          )}
-          {currentIndex < count - 1 && (
-            <ClickZoneRight
-              type="button"
-              onClick={handleNext}
-              aria-label="Next image"
-            />
-          )}
-        </>
-      )}
+          return (
+            <DesktopSlide key={img._key} $index={index} $reveal={imagesReady}>
+              {src && (
+                <DesktopSlideImage
+                  src={src}
+                  srcSet={srcSet}
+                  alt={data?.title ?? ''}
+                  loading="eager"
+                  draggable={false}
+                />
+              )}
+            </DesktopSlide>
+          );
+        })}
+      </DesktopScroller>
     </ProjectContainer>
   );
 }

@@ -94,7 +94,7 @@ const Layout = () => {
   const isGalleryDesktop = location.pathname === '/gallery' && !isMobile;
 
   return (
-    <LayoutContainer $detachFooter={isGalleryDesktop}>
+    <LayoutContainer data-layout-scroll $detachFooter={isGalleryDesktop}>
       <PageViewport $isLanding={isLanding}>
         <Nav onLanding={isLanding} />
         {isLanding ? (

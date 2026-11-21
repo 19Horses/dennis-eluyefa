@@ -7,57 +7,69 @@ export const ProjectContainer = styled.div`
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  padding: 0.5rem;
+  padding: 0;
   position: relative;
-  animation: ${fadeIn} 0.5s ease forwards;
   box-sizing: border-box;
+  background-color: ${COLORS.primary};
 
   @media (max-width: 768px) {
-    padding: 0;
     display: flex;
     flex-direction: column;
   }
 `;
 
-export const SliderViewport = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-`;
-
-export const SliderTrack = styled.div<{ $count: number }>`
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  width: ${(p) => p.$count * 100}%;
-  transition: transform 0.4s ease;
-`;
-
-export const Slide = styled.div<{ $count: number }>`
-  flex: 0 0 ${(p) => 100 / p.$count}%;
-  height: 100%;
-  min-width: 0;
+export const DesktopScroller = styled.div`
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  background-color: ${COLORS.primary};
+  gap: 0.45rem;
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
-export const SlideImageContainer = styled.div`
-  flex: 1 1 0;
-  min-width: 0;
+export const DesktopSlide = styled.div<{ $index: number; $reveal: boolean }>`
+  flex: 0 0 auto;
+  height: 100%;
+  max-width: none;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  overflow: hidden;
+  align-items: stretch;
+  opacity: 0;
+  animation: ${({ $reveal }) => ($reveal ? fadeIn : 'none')};
+  animation-duration: 0.65s;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+  animation-delay: ${({ $reveal, $index }) =>
+    $reveal ? `${$index * 0.1}s` : '0s'};
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: ${({ $reveal }) => ($reveal ? 1 : 0)};
+    animation: none;
+  }
 `;
 
-export const SlideImage = styled.img`
+export const DesktopSlideImage = styled.img`
   height: 100%;
   width: auto;
-  max-width: 100%;
-  object-fit: contain;
+  max-width: none;
   display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  &::selection {
+    background-color: transparent;
+  }
 `;
 
 export const ProjectMeta = styled.div`
@@ -66,6 +78,12 @@ export const ProjectMeta = styled.div`
   padding: 1rem 1.5rem;
   box-sizing: border-box;
   text-align: right;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    text-align: center;
+    width: 100%;
+  }
 `;
 
 export const ProjectTitle = styled.h1`
@@ -92,31 +110,6 @@ export const ProjectDate = styled.p`
     background-color: ${COLORS.secondary};
     color: ${COLORS.tertiary};
   }
-`;
-
-export const ClickZone = styled.button`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  border: none;
-  background: transparent;
-  z-index: 1;
-  padding: 0;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-export const ClickZoneLeft = styled(ClickZone)`
-  left: 0;
-  cursor: w-resize;
-`;
-
-export const ClickZoneRight = styled(ClickZone)`
-  right: 0;
-  cursor: e-resize;
 `;
 
 export const MobileGallery = styled.div`
