@@ -75,6 +75,27 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
     }
   }, [slug]);
 
+  // Kill Safari’s vertical rubber-band while the mobile project overlay is open.
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const html = document.documentElement;
+    const { body } = document;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    const prevBodyOverscroll = body.style.overscrollBehavior;
+    const prevBodyOverflow = body.style.overflow;
+
+    html.style.overscrollBehavior = 'none';
+    body.style.overscrollBehavior = 'none';
+    body.style.overflow = 'hidden';
+
+    return () => {
+      html.style.overscrollBehavior = prevHtmlOverscroll;
+      body.style.overscrollBehavior = prevBodyOverscroll;
+      body.style.overflow = prevBodyOverflow;
+    };
+  }, [isMobile]);
+
   useEffect(() => {
     if (count === 0) {
       setImagesReady(true);

@@ -118,6 +118,8 @@ export const MobileGallery = styled.div`
   height: 100%;
   min-height: 0;
   background-color: ${COLORS.primary};
+  overscroll-behavior: none;
+  touch-action: pan-x;
 `;
 
 export const MobileScroller = styled.div`
@@ -129,7 +131,7 @@ export const MobileScroller = styled.div`
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
+  overscroll-behavior: none;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {

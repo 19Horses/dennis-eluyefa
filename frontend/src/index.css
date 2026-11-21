@@ -21,6 +21,9 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  /* Stop Safari rubber-band revealing the browser chrome (white) */
+  overscroll-behavior: none;
+  background-color: #000000;
 }
 
 body {
@@ -29,6 +32,8 @@ body {
 
 #root {
   height: 100%;
+  overscroll-behavior: none;
+  background-color: #000000;
 }
 
 img::selection {

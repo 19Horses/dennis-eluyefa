@@ -202,6 +202,10 @@ export const OverlayRoot = styled.div<{ $exiting?: boolean }>`
   inset: 0;
   z-index: 4;
   pointer-events: ${({ $exiting }) => ($exiting ? 'none' : 'auto')};
+  /* Lock vertical Safari rubber-band; gallery still pans horizontally */
+  overscroll-behavior: none;
+  touch-action: pan-x;
+  background-color: ${COLORS.primary};
 `;
 
 /* Dim layer only — sibling to images so opacity fades independently */
@@ -258,7 +262,7 @@ export const OverlayScroller = styled.div<{ $mobile?: boolean }>`
   scroll-behavior: ${({ $mobile }) => ($mobile ? 'smooth' : 'auto')};
   scroll-snap-type: ${({ $mobile }) => ($mobile ? 'x mandatory' : 'none')};
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: ${({ $mobile }) => ($mobile ? 'contain' : 'none')};
+  overscroll-behavior: none;
   scrollbar-width: none;
   box-sizing: border-box;
 
