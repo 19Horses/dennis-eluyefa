@@ -12,6 +12,9 @@ const scatterFadeIn = keyframes`
 
 export const GalleryContainer = styled.div`
   position: relative;
+  /* Keep scatter z-index inside this context so images stay under mobile menu (z 20/30) */
+  z-index: 0;
+  isolation: isolate;
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -57,7 +60,8 @@ export const DecelToggle = styled.button<{ $on: boolean }>`
   position: absolute;
   left: 1rem;
   bottom: 1rem;
-  z-index: 30;
+  /* High within gallery only — isolation keeps this under the mobile menu */
+  z-index: 999;
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;

@@ -118,6 +118,7 @@ export const ClientContainer = styled.div`
 `;
 
 export const QuoteContainer = styled.div`
+  position: relative;
   flex: 1 1 0;
   min-width: 0;
   max-width: 100%;
@@ -152,6 +153,34 @@ export const QuoteContainer = styled.div`
     touch-action: pan-y;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+  }
+`;
+
+export const ScrollHintArrow = styled.div<{ $visible: boolean }>`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 1.1rem;
+    bottom: 1.25rem;
+    z-index: 3;
+    flex: 0 0 auto;
+    width: 2.4rem;
+    height: 3.4rem;
+    min-height: 0;
+    pointer-events: none;
+    opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+    transition: opacity 0.45s ease;
+    color: ${COLORS.secondary};
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   }
 `;
 
