@@ -23,8 +23,14 @@ import {
 const SCATTER_OPTIONS = { width: IMAGE_WIDTHS.scatter };
 const MIN_DISPLAY_WIDTH = 140;
 const MAX_DISPLAY_WIDTH = 280;
-/** Inset from container edges on both axes */
-const SCATTER_PADDING = 16;
+const getScatterPadding = (container: HTMLElement) => {
+  const styles = window.getComputedStyle(container);
+  return parseFloat(styles.paddingLeft) || 0;
+};
+
+/** Match ScatterImage `max-width: min(42vw, 320px)` so bounds use real display size */
+const getDisplayWidth = (assignedWidth: number) =>
+  Math.min(assignedWidth, window.innerWidth * 0.42, 320);
 const FLING_MIN_SPEED = 0.03; // px/ms
 const FLING_MAX_SPEED = 2.4; // px/ms
 /** How strongly release velocity maps to slide (1 = match mouse px/ms) */
@@ -133,27 +139,23 @@ function Gallery() {
     }
 
     const bounds = container.getBoundingClientRect();
+    const pad = getScatterPadding(container);
     const nextItems: ScatterItem[] = imageSources.map((image, index) => {
       const width = Math.round(
         randomBetween(MIN_DISPLAY_WIDTH, MAX_DISPLAY_WIDTH)
       );
-      const estimatedHeight = width * 1.25;
-      const maxX = Math.max(
-        bounds.width - width - SCATTER_PADDING,
-        SCATTER_PADDING
-      );
-      const maxY = Math.max(
-        bounds.height - estimatedHeight - SCATTER_PADDING,
-        SCATTER_PADDING
-      );
+      const displayWidth = getDisplayWidth(width);
+      const estimatedHeight = displayWidth * 1.25;
+      const maxX = Math.max(bounds.width - displayWidth - pad, pad);
+      const maxY = Math.max(bounds.height - estimatedHeight - pad, pad);
 
       return {
         id: image.id,
         src: image.src,
         srcSet: image.srcSet,
         width,
-        x: randomBetween(SCATTER_PADDING, maxX),
-        y: randomBetween(SCATTER_PADDING, maxY),
+        x: randomBetween(pad, maxX),
+        y: randomBetween(pad, maxY),
         delay: index * 0.12,
         zIndex: index + 1,
       };
@@ -188,19 +190,15 @@ function Gallery() {
         if (current.length === 0) return current;
         const bounds = container.getBoundingClientRect();
 
+        const pad = getScatterPadding(container);
         return current.map((item) => {
-          const maxX = Math.max(
-            bounds.width - item.width - SCATTER_PADDING,
-            SCATTER_PADDING
-          );
-          const maxY = Math.max(
-            bounds.height - item.width * 1.25 - SCATTER_PADDING,
-            SCATTER_PADDING
-          );
+          const displayWidth = getDisplayWidth(item.width);
+          const maxX = Math.max(bounds.width - displayWidth - pad, pad);
+          const maxY = Math.max(bounds.height - displayWidth * 1.25 - pad, pad);
           return {
             ...item,
-            x: clamp(item.x, SCATTER_PADDING, maxX),
-            y: clamp(item.y, SCATTER_PADDING, maxY),
+            x: clamp(item.x, pad, maxX),
+            y: clamp(item.y, pad, maxY),
           };
         });
       });
@@ -211,21 +209,18 @@ function Gallery() {
   }, []);
 
   const getItemBounds = useCallback(
-    (item: ScatterItem, imageHeight: number) => {
+    (item: ScatterItem, imageWidth: number, imageHeight: number) => {
       const container = containerRef.current;
       if (!container) {
-        return { maxX: SCATTER_PADDING, maxY: SCATTER_PADDING };
+        return { pad: 0, maxX: 0, maxY: 0 };
       }
       const bounds = container.getBoundingClientRect();
+      const pad = getScatterPadding(container);
+      const displayWidth = imageWidth || getDisplayWidth(item.width);
       return {
-        maxX: Math.max(
-          bounds.width - item.width - SCATTER_PADDING,
-          SCATTER_PADDING
-        ),
-        maxY: Math.max(
-          bounds.height - imageHeight - SCATTER_PADDING,
-          SCATTER_PADDING
-        ),
+        pad,
+        maxX: Math.max(bounds.width - displayWidth - pad, pad),
+        maxY: Math.max(bounds.height - imageHeight - pad, pad),
       };
     },
     []
@@ -279,18 +274,23 @@ function Gallery() {
           const imageEl = container.querySelector<HTMLImageElement>(
             `[data-scatter-id="${id}"]`
           );
-          const imageHeight =
-            imageEl?.getBoundingClientRect().height ?? target.width * 1.25;
-          const { maxX, maxY } = getItemBounds(target, imageHeight);
+          const rect = imageEl?.getBoundingClientRect();
+          const displayWidth = rect?.width || getDisplayWidth(target.width);
+          const imageHeight = rect?.height || displayWidth * 1.25;
+          const { pad, maxX, maxY } = getItemBounds(
+            target,
+            displayWidth,
+            imageHeight
+          );
           let nextX = target.x + vx * dt;
           let nextY = target.y + vy * dt;
 
-          if (nextX <= SCATTER_PADDING || nextX >= maxX) {
-            nextX = clamp(nextX, SCATTER_PADDING, maxX);
+          if (nextX <= pad || nextX >= maxX) {
+            nextX = clamp(nextX, pad, maxX);
             vx *= -FLING_BOUNCE;
           }
-          if (nextY <= SCATTER_PADDING || nextY >= maxY) {
-            nextY = clamp(nextY, SCATTER_PADDING, maxY);
+          if (nextY <= pad || nextY >= maxY) {
+            nextY = clamp(nextY, pad, maxY);
             vy *= -FLING_BOUNCE;
           }
 
@@ -362,19 +362,16 @@ function Gallery() {
     const imageEl = container.querySelector<HTMLImageElement>(
       `[data-scatter-id="${drag.id}"]`
     );
-    const imageHeight =
-      imageEl?.getBoundingClientRect().height ?? target.width * 1.25;
-    const { maxX, maxY } = getItemBounds(target, imageHeight);
-    const nextX = clamp(
-      event.clientX - bounds.left - drag.offsetX,
-      SCATTER_PADDING,
-      maxX
+    const rect = imageEl?.getBoundingClientRect();
+    const displayWidth = rect?.width || getDisplayWidth(target.width);
+    const imageHeight = rect?.height || displayWidth * 1.25;
+    const { pad, maxX, maxY } = getItemBounds(
+      target,
+      displayWidth,
+      imageHeight
     );
-    const nextY = clamp(
-      event.clientY - bounds.top - drag.offsetY,
-      SCATTER_PADDING,
-      maxY
-    );
+    const nextX = clamp(event.clientX - bounds.left - drag.offsetX, pad, maxX);
+    const nextY = clamp(event.clientY - bounds.top - drag.offsetY, pad, maxY);
 
     const now = performance.now();
     const sample = dragSampleRef.current;
@@ -412,19 +409,20 @@ function Gallery() {
       const imageEl = container.querySelector<HTMLImageElement>(
         `[data-scatter-id="${drag.id}"]`
       );
-      const imageHeight =
-        imageEl?.getBoundingClientRect().height ?? target.width * 1.25;
-      const { maxX, maxY } = getItemBounds(target, imageHeight);
+      const rect = imageEl?.getBoundingClientRect();
+      const displayWidth = rect?.width || getDisplayWidth(target.width);
+      const imageHeight = rect?.height || displayWidth * 1.25;
+      const { pad, maxX, maxY } = getItemBounds(
+        target,
+        displayWidth,
+        imageHeight
+      );
       const nextX = clamp(
         event.clientX - bounds.left - drag.offsetX,
-        SCATTER_PADDING,
+        pad,
         maxX
       );
-      const nextY = clamp(
-        event.clientY - bounds.top - drag.offsetY,
-        SCATTER_PADDING,
-        maxY
-      );
+      const nextY = clamp(event.clientY - bounds.top - drag.offsetY, pad, maxY);
       const now = performance.now();
       const sample = dragSampleRef.current;
       const dt = now - sample.t;

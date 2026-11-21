@@ -37,6 +37,7 @@ const QuoteStage = styled.div<{ $monochrome: boolean }>`
 type AnimatedQuoteProps = {
   quote: string;
   monochrome?: boolean;
+  onRevealComplete?: () => void;
 };
 
 type Letter = {
@@ -116,6 +117,7 @@ const isFullStopChar = (char: string) =>
 export const AnimatedQuote = ({
   quote,
   monochrome = false,
+  onRevealComplete,
 }: AnimatedQuoteProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const fontUrl = new URL('../assets/HelveticaNeue-Bold.otf', import.meta.url)
@@ -127,6 +129,9 @@ export const AnimatedQuote = ({
   const revealedCountRef = useRef<number>(0);
   const maxWidthRef = useRef<number>(0);
   const isInitializedRef = useRef<boolean>(false);
+  const revealCompleteFiredRef = useRef(false);
+  const onRevealCompleteRef = useRef(onRevealComplete);
+  onRevealCompleteRef.current = onRevealComplete;
   const monochromeRef = useRef(monochrome);
   monochromeRef.current = monochrome;
   const canvasSizeRef = useRef({ width: 0, height: 0 });
@@ -420,6 +425,7 @@ export const AnimatedQuote = ({
 
     lettersRef.current = letters;
     paintedCountRef.current = 0;
+    revealCompleteFiredRef.current = false;
     updateCursorAppearance();
   };
 
@@ -521,6 +527,15 @@ export const AnimatedQuote = ({
     ) {
       revealedCountRef.current += 1;
       lastRevealAtRef.current = now;
+    }
+
+    if (
+      !revealCompleteFiredRef.current &&
+      lettersRef.current.length > 0 &&
+      revealedCountRef.current >= lettersRef.current.length
+    ) {
+      revealCompleteFiredRef.current = true;
+      onRevealCompleteRef.current?.();
     }
 
     lettersRef.current.forEach((letter, index) => {

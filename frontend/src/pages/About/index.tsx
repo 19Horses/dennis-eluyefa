@@ -29,13 +29,16 @@ const SWIPE_HINT_THRESHOLD_PX = 28;
 function About() {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [showScrollHint, setShowScrollHint] = useState(true);
+  const [hintReady, setHintReady] = useState(false);
+  const [hintDismissed, setHintDismissed] = useState(false);
   const {
     data: aboutData,
     isLoading: aboutIsLoading,
     isError: aboutIsError,
   } = useGetAbout();
   const { data, isLoading, isError } = useGetClients();
+
+  const showScrollHint = isMobile && hintReady && !hintDismissed;
 
   useEffect(() => {
     if (!isMobile || !showScrollHint) return;
@@ -49,7 +52,7 @@ function About() {
     const dismiss = () => {
       if (dismissed) return;
       dismissed = true;
-      setShowScrollHint(false);
+      setHintDismissed(true);
     };
 
     const onTouchStart = (event: TouchEvent) => {
@@ -94,6 +97,13 @@ function About() {
           key={isMobile ? 'mono' : 'color'}
           monochrome={isMobile}
           quote={`“${quoteText}”`}
+          onRevealComplete={
+            isMobile
+              ? () => {
+                  window.setTimeout(() => setHintReady(true), 180);
+                }
+              : undefined
+          }
         />
         {isMobile ? (
           <ScrollHintArrow
