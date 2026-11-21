@@ -28,7 +28,9 @@ const LayoutContainer = styled.div<{
 
   @media (max-width: 768px) {
     overflow: hidden;
-    overscroll-behavior: none;
+    /* Allow Safari pull-to-refresh; contain sideways only */
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
     scroll-snap-type: none;
   }
 `;

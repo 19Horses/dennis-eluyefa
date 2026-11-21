@@ -29,7 +29,7 @@ export const AboutContainer = styled.div`
     overflow-y: auto;
     scroll-snap-type: y mandatory;
     scroll-behavior: auto;
-    overscroll-behavior-y: none;
+    overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     scrollbar-width: none;
@@ -64,6 +64,30 @@ export const ClientText = styled.p<{ $delay?: number }>`
   }
 `;
 
+export const ClientsHintArrow = styled.div<{ $visible: boolean }>`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    /* Match ClientHeading size: clamp(1.05rem, 4.2vw, 1.35rem) */
+    width: 1.15em;
+    height: 1em;
+    font-size: clamp(1.05rem, 4.2vw, 1.35rem);
+    pointer-events: none;
+    opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+    transition: opacity 0.45s ease;
+    color: ${COLORS.tertiary};
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+`;
 export const ClientContainer = styled.div`
   flex: 0 1 clamp(180px, 20vw, 260px);
   min-width: 0;
@@ -88,18 +112,19 @@ export const ClientContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    flex: 0 0 100%;
+    position: relative;
+    flex: 0 0 auto;
     width: 100%;
-    height: 100%;
-    min-height: 100%;
-    max-height: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
     min-width: 0;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem 1.1rem;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0.85rem 1.1rem 1rem;
     overflow: hidden;
     touch-action: pan-y;
-    scroll-snap-align: start;
+    scroll-snap-align: end;
     scroll-snap-stop: always;
   }
 
@@ -114,6 +139,10 @@ export const ClientContainer = styled.div`
       background-color: ${COLORS.secondary};
       color: ${COLORS.tertiary};
     }
+  }
+
+  &:hover ${ClientsHintArrow} {
+    color: ${COLORS.secondary};
   }
 `;
 
@@ -281,12 +310,38 @@ export const QuoteText = styled.p`
 
 const CLIENT_ANIMATION_DELAY_STEP = 0.05;
 
+export const ClientsHeadingRow = styled.div`
+  display: contents;
+
+  @media (max-width: 768px) {
+    position: absolute;
+    top: 0.85rem;
+    left: 1.1rem;
+    right: 1.1rem;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: auto;
+    margin-bottom: 0;
+    /* Touches pass through to ClientsScroller for native momentum scroll */
+    pointer-events: none;
+  }
+`;
+
 export const ClientHeading = styled(ClientText)`
   text-decoration: underline;
   margin-bottom: 0.8rem;
 
   @media (max-width: 768px) {
-    margin-bottom: 1.1rem;
+    text-align: left;
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
+    font-size: clamp(1.05rem, 4.2vw, 1.35rem);
   }
 `;
 
@@ -300,15 +355,9 @@ export const ClientsList = styled.div`
   box-sizing: border-box;
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    justify-items: center;
-    overflow: visible;
-    max-height: none;
-    padding: 0;
-    gap: 0.7rem 0.9rem;
+    display: none;
   }
 
-  // no scrollbar
   &::-webkit-scrollbar {
     display: none;
   }
@@ -316,5 +365,41 @@ export const ClientsList = styled.div`
   & {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+`;
+
+/** Mobile: single thin row — native momentum scroll; fills section so swipes work anywhere */
+export const ClientsScroller = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    /* Room for absolute heading row above the names */
+    padding-top: 2rem;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    ${ClientText} {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      text-align: left;
+      font-size: clamp(0.95rem, 3.6vw, 1.2rem);
+    }
   }
 `;

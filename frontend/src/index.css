@@ -21,9 +21,8 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  /* Stop Safari rubber-band revealing the browser chrome (white) */
-  overscroll-behavior: none;
-  background-color: #000000;
+  /* Match nav white so Safari rubber-band / PTR chrome matches */
+  background-color: #ffffff;
 }
 
 body {
@@ -32,8 +31,7 @@ body {
 
 #root {
   height: 100%;
-  overscroll-behavior: none;
-  background-color: #000000;
+  background-color: #ffffff;
 }
 
 img::selection {
