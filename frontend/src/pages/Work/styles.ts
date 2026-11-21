@@ -230,7 +230,7 @@ export const OverlayStage = styled.div<{ $mobile?: boolean }>`
   /* Match WorkContainer padding so overlay images share the same inset */
   padding: ${({ $mobile }) => ($mobile ? '0' : '0.5rem')};
   box-sizing: border-box;
-  height: ${({ $mobile }) => ($mobile ? '100%' : '80%')};
+  height: ${({ $mobile }) => ($mobile ? '100%' : '86%')};
   min-height: 0;
   cursor: default;
 
@@ -288,9 +288,9 @@ export const OverlaySlide = styled.div<{
   animation-duration: ${({ $exiting }) => ($exiting ? '0.45s' : '0.65s')};
   animation-timing-function: ease;
   animation-fill-mode: forwards;
-  /* Exit mirrors entrance stagger so slides leave as their own layer */
+  /* Exit together; entrance keeps stagger */
   animation-delay: ${({ $exiting, $reveal, $index }) =>
-    $exiting ? `${$index * 0.08}s` : $reveal ? `${$index * 0.1}s` : '0s'};
+    $exiting ? '0s' : $reveal ? `${$index * 0.1}s` : '0s'};
 
   @media (prefers-reduced-motion: reduce) {
     opacity: ${({ $reveal, $exiting }) => ($reveal && !$exiting ? 1 : 0)};

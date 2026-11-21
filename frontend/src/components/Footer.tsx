@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { styled } from 'styled-components';
 import { fadeIn } from '../../styles/animations';
 import { COLORS } from '../constants';
@@ -112,19 +112,22 @@ const Copyright = styled.p<{ $isMobileNav: boolean }>`
   }
 `;
 
-const GalleryLink = styled(Link)<{ $isMobileNav: boolean }>`
+const GalleryLink = styled(Link)<{
+  $isMobileNav: boolean;
+  $isActive: boolean;
+}>`
   position: ${({ $isMobileNav }) => ($isMobileNav ? 'static' : 'absolute')};
   right: ${({ $isMobileNav }) => ($isMobileNav ? 'auto' : '2rem')};
   top: ${({ $isMobileNav }) => ($isMobileNav ? 'auto' : '50%')};
   transform: ${({ $isMobileNav }) =>
     $isMobileNav ? 'none' : 'translateY(-50%)'};
   font-family: 'Helvetica Neue', sans-serif;
-  color: inherit;
+  color: ${({ $isActive }) => ($isActive ? COLORS.tertiary : 'inherit')};
   text-decoration: none;
   font-size: 1.2rem;
   line-height: 1.2;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, color 0.2s ease;
   margin-left: 0;
   text-align: ${({ $isMobileNav }) => ($isMobileNav ? 'center' : 'right')};
   flex-shrink: 0;
@@ -140,10 +143,17 @@ const GalleryLink = styled(Link)<{ $isMobileNav: boolean }>`
 `;
 
 const Footer = ({ isMobileNav = false, attached = false }: FooterProps) => {
+  const location = useLocation();
+  const isGallery = location.pathname === '/gallery';
+
   return (
     <FooterContainer $isMobileNav={isMobileNav} $attached={attached}>
       <LinksRow $isMobileNav={isMobileNav}>
-        <GalleryLink to="/gallery" $isMobileNav={isMobileNav}>
+        <GalleryLink
+          to="/gallery"
+          $isMobileNav={isMobileNav}
+          $isActive={isGallery}
+        >
           gallery
         </GalleryLink>
         <SocialLinks $isMobileNav={isMobileNav}>

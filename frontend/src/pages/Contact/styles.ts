@@ -27,9 +27,11 @@ export const ContactContainer = styled.div`
   @media (max-width: 768px) {
     padding: clamp(1rem, 4vw, 1.5rem);
     gap: 1rem;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
   }
 `;
-
 export const ContactText = styled.p`
   font-family: 'Helvetica Neue Bold', sans-serif;
   font-size: clamp(1.6rem, 5vw, 35px);

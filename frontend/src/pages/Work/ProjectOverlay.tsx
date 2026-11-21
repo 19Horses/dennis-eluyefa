@@ -19,7 +19,6 @@ import {
 
 const GALLERY_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.gallery };
 const EXIT_SLIDE_MS = 450;
-const EXIT_STAGGER_MS = 80;
 
 function preloadImage(src: string) {
   return new Promise<void>((resolve) => {
@@ -137,25 +136,22 @@ export function ProjectOverlay({ slug, onClose }: ProjectOverlayProps) {
     setCurrentIndex(Math.min(Math.max(nextIndex, 0), Math.max(count - 1, 0)));
   }, [count]);
 
-  const exitDurationMs =
-    EXIT_SLIDE_MS + Math.max(0, count - 1) * EXIT_STAGGER_MS;
-
   useEffect(() => {
     if (!exiting) return;
 
-    // Wait for last staggered slide + dim fade to finish before unmounting.
+    // Wait for shared image + dim fade to finish before unmounting.
     const timeoutId = window.setTimeout(() => {
       onCloseRef.current();
-    }, exitDurationMs + 40);
+    }, EXIT_SLIDE_MS + 40);
 
     return () => window.clearTimeout(timeoutId);
-  }, [exiting, exitDurationMs]);
+  }, [exiting]);
 
   return (
     <OverlayRoot $exiting={exiting} role="presentation">
       <OverlayDim
         $exiting={exiting}
-        $exitDurationMs={exitDurationMs}
+        $exitDurationMs={EXIT_SLIDE_MS}
         $opaque={isMobile}
         onClick={requestClose}
       />

@@ -5,16 +5,17 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import Footer from './Footer';
 import Nav from './Nav';
 
-const LayoutContainer = styled.div<{ $detachFooter: boolean }>`
+const LayoutContainer = styled.div<{ $lockScroll: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100dvh;
   min-height: 0;
   box-sizing: border-box;
-  overflow: ${({ $detachFooter }) => ($detachFooter ? 'hidden' : 'auto')};
-  scroll-snap-type: ${({ $detachFooter }) =>
-    $detachFooter ? 'none' : 'y mandatory'};
+  overflow: ${({ $lockScroll }) => ($lockScroll ? 'hidden' : 'auto')};
+  overscroll-behavior: ${({ $lockScroll }) => ($lockScroll ? 'none' : 'auto')};
+  scroll-snap-type: ${({ $lockScroll }) =>
+    $lockScroll ? 'none' : 'y mandatory'};
   scroll-behavior: smooth;
   scrollbar-width: none;
 
@@ -24,6 +25,7 @@ const LayoutContainer = styled.div<{ $detachFooter: boolean }>`
 
   @media (max-width: 768px) {
     overflow: hidden;
+    overscroll-behavior: none;
     scroll-snap-type: none;
   }
 `;
@@ -91,10 +93,10 @@ const Layout = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const isLanding = location.pathname === '/' && !isMobile;
-  const isGalleryDesktop = location.pathname === '/gallery' && !isMobile;
+  const lockContactMobileScroll = isMobile && location.pathname === '/contact';
 
   return (
-    <LayoutContainer data-layout-scroll $detachFooter={isGalleryDesktop}>
+    <LayoutContainer data-layout-scroll $lockScroll={lockContactMobileScroll}>
       <PageViewport $isLanding={isLanding}>
         <Nav onLanding={isLanding} />
         {isLanding ? (
@@ -106,9 +108,8 @@ const Layout = () => {
             <Outlet />
           </LayoutContent>
         )}
-        {isGalleryDesktop && <Footer attached />}
       </PageViewport>
-      {!isGalleryDesktop && <Footer />}
+      {!lockContactMobileScroll && <Footer />}
     </LayoutContainer>
   );
 };
