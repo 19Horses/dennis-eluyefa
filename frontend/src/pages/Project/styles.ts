@@ -190,8 +190,9 @@ export const MobileCloseButton = styled.button`
   justify-content: center;
 
   &:focus-visible {
-    outline: 1px solid ${COLORS.secondary};
+    outline: 2px solid ${COLORS.tertiary};
     outline-offset: 2px;
+    border-radius: 0;
   }
 `;
 

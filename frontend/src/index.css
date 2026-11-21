@@ -34,3 +34,14 @@ body {
 img::selection {
   background-color: transparent;
 }
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #f000b6;
+  outline-offset: 2px;
+  /* Rectangular ring — don't inherit rounded control radii */
+  border-radius: 0;
+}

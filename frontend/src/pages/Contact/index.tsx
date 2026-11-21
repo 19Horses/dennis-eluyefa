@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react';
+import { Loading } from '../../components/Loading';
+import { useGetContact } from '../../queries/useGetContact';
 import {
   ContactContainer,
   ContactText,
@@ -7,23 +10,78 @@ import {
   Underline,
 } from './styles';
 
-const EMAIL = 'contact@denniseluyefa.com';
+const FALLBACK = {
+  email: 'contact@denniseluyefa.com',
+  inquiriesText:
+    'for all **business**, **commission**, **collaborative**, or otherwise **professional** inquiries, please email:',
+  thanksMessage: 'THANKS FOR STOPPING BY :)',
+  printText:
+    'if there are images on this website you wish to purchase as a **print**, please contact: {{email}} with your specifications.',
+};
+
+/** Renders CMS copy; `**word**` becomes underlined, `{{email}}` becomes the email link. */
+function renderMarkedText(text: string, email: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  const pattern = /(\{\{email\}\}|\*\*[^*]+\*\*)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    const token = match[0];
+    if (token === '{{email}}') {
+      parts.push(<Email key={`email-${key++}`}>{email}</Email>);
+    } else {
+      parts.push(
+        <Underline key={`em-${key++}`}>{token.slice(2, -2)}</Underline>
+      );
+    }
+
+    lastIndex = match.index + token.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
 
 function Contact() {
+  const { data, isLoading, isError } = useGetContact();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  const email = data?.email || FALLBACK.email;
+  const inquiriesText = data?.inquiriesText || FALLBACK.inquiriesText;
+  const thanksMessage = data?.thanksMessage || FALLBACK.thanksMessage;
+  const printText = data?.printText || FALLBACK.printText;
+
+  if (isError && !data) {
+    // Fall back to hardcoded copy if the document is missing / unreachable.
+  }
+
+  const inquiriesHasEmail = inquiriesText.includes('{{email}}');
+
   return (
     <ContactContainer>
       <LeftSubtext>
-        for all <Underline>business</Underline>,{' '}
-        <Underline>commission</Underline>, <Underline>collaborative</Underline>,
-        or otherwise <Underline>professional</Underline> inquiries, please
-        email: <Email>{EMAIL}</Email>
+        {renderMarkedText(inquiriesText, email)}
+        {!inquiriesHasEmail ? (
+          <>
+            {' '}
+            <Email>{email}</Email>
+          </>
+        ) : null}
       </LeftSubtext>
-      <ContactText>THANKS FOR STOPPING BY :)</ContactText>
-      <RightSubtext>
-        if there are images on this website you wish to purchase as a{' '}
-        <Underline>print</Underline>, please contact: <Email>{EMAIL}</Email>{' '}
-        with your specifications.
-      </RightSubtext>
+      <ContactText>{thanksMessage}</ContactText>
+      <RightSubtext>{renderMarkedText(printText, email)}</RightSubtext>
     </ContactContainer>
   );
 }

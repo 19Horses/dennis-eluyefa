@@ -1,4 +1,4 @@
-import { styled } from 'styled-components';
+import { css, styled } from 'styled-components';
 import { COLORS } from '../../constants';
 import {
   fadeIn,
@@ -6,6 +6,9 @@ import {
   fadeOut,
   fadeOutDown,
 } from '../../../styles/animations';
+
+/** Fade duration for others, then again for the selected card */
+export const WORK_EXIT_MS = 450;
 
 export const WorkWrapper = styled.div<{
   $fadeTop: number;
@@ -16,6 +19,7 @@ export const WorkWrapper = styled.div<{
   height: 100%;
   overflow: hidden;
 
+  /* Mobile-only edge fades — desktop work uses page scroll with no header shadow */
   &::before,
   &::after {
     content: '';
@@ -32,7 +36,6 @@ export const WorkWrapper = styled.div<{
     background: linear-gradient(to bottom, ${COLORS.primary}, transparent);
     opacity: ${({ $fadeTop }) => $fadeTop / 1.4};
     height: ${({ $fadeTop }) => $fadeTop * 6}%;
-    border-radius: 10px;
   }
 
   &::after {
@@ -40,7 +43,16 @@ export const WorkWrapper = styled.div<{
     background: linear-gradient(to top, ${COLORS.primary}, transparent);
     opacity: ${({ $fadeBottom }) => $fadeBottom / 1.4};
     height: ${({ $fadeBottom }) => $fadeBottom * 6}%;
-    border-radius: 10px;
+  }
+
+  @media (min-width: 769px) {
+    height: auto;
+    overflow: visible;
+
+    &::before,
+    &::after {
+      display: none;
+    }
   }
 `;
 
@@ -66,6 +78,11 @@ export const WorkContainer = styled.div`
     gap: 0.4rem;
   }
 
+  @media (min-width: 769px) {
+    height: auto;
+    overflow: visible;
+  }
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -75,7 +92,6 @@ export const WorkContainer = styled.div`
     scrollbar-width: none;
   }
 `;
-
 export const ProjectTitle = styled.p`
   font-family: 'Helvetica Neue Bold', sans-serif;
   font-size: 2rem;
@@ -112,7 +128,11 @@ export const ProjectImage = styled.img`
   }
 `;
 
-export const ProjectCard = styled.div<{ $index?: number }>`
+export const ProjectCard = styled.div<{
+  $index?: number;
+  $exitHide?: boolean;
+  $exitKeep?: boolean;
+}>`
   width: 100%;
   aspect-ratio: 4 / 5;
   cursor: pointer;
@@ -120,6 +140,22 @@ export const ProjectCard = styled.div<{ $index?: number }>`
   opacity: 0;
   animation: ${fadeIn} 0.6s ease forwards;
   animation-delay: ${(props) => (props.$index ?? 0) * 0.1}s;
+
+  ${({ $exitHide }) =>
+    $exitHide &&
+    css`
+      animation: ${fadeOut} ${WORK_EXIT_MS / 1000}s ease forwards;
+      pointer-events: none;
+    `}
+
+  ${({ $exitKeep }) =>
+    $exitKeep &&
+    css`
+      animation: none;
+      opacity: 1;
+      pointer-events: none;
+      z-index: 2;
+    `}
 
   &::before {
     content: '';
@@ -147,49 +183,22 @@ export const ProjectCard = styled.div<{ $index?: number }>`
       opacity: 1;
     }
   }
-`;
 
-export const ViewModeToggle = styled.div`
-  position: absolute;
-  left: 0.85rem;
-  bottom: 0.85rem;
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  gap: 0.15rem;
-  padding: 0.35rem 0.4rem;
-  pointer-events: auto;
-  background: rgba(0, 0, 0, 0.55);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.08);
+  ${({ $exitKeep }) =>
+    $exitKeep &&
+    css`
+      &::before {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
 
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
+      ${ProjectImage} {
+        transform: scale(0.95);
+      }
 
-export const ViewModeButton = styled.button<{ $active: boolean }>`
-  border: 0;
-  padding: 0.35rem 0.7rem;
-  margin: 0;
-  background: transparent;
-  color: ${COLORS.secondary};
-  font-family: 'Helvetica Neue Bold', sans-serif;
-  font-size: 1.35rem;
-  font-weight: bold;
-  line-height: 1;
-  cursor: pointer;
-  opacity: ${({ $active }) => ($active ? 1 : 0.4)};
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  &:focus-visible {
-    outline: 1px solid ${COLORS.secondary};
-    outline-offset: 2px;
-  }
+      ${ProjectTitle} {
+        opacity: 1;
+      }
+    `}
 `;
 
 export const OverlayRoot = styled.div<{ $exiting?: boolean }>`
@@ -347,8 +356,9 @@ export const OverlayCloseButton = styled.button<{
   }
 
   &:focus-visible {
-    outline: 1px solid ${COLORS.secondary};
-    outline-offset: 3px;
+    outline: 2px solid ${COLORS.tertiary};
+    outline-offset: 2px;
+    border-radius: 0;
   }
 `;
 

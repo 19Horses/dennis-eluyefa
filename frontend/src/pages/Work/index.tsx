@@ -13,15 +13,13 @@ import {
   ProjectCard,
   ProjectImage,
   ProjectTitle,
-  ViewModeButton,
-  ViewModeToggle,
+  WORK_EXIT_MS,
   WorkContainer,
   WorkWrapper,
 } from './styles';
 
 const GRID_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.grid };
 const GALLERY_IMAGE_OPTIONS = { width: IMAGE_WIDTHS.gallery };
-const VIEW_MODE_KEY = 'work-project-view-mode';
 const PROJECT_QUERY_KEY = 'project';
 
 const prefetchedGalleryUrls = new Set<string>();
@@ -40,30 +38,41 @@ function prefetchProjectGallery(project: ProjectType) {
   });
 }
 
-function readStoredViewMode(): 1 | 2 {
-  try {
-    const stored = window.localStorage.getItem(VIEW_MODE_KEY);
-    return stored === '2' ? 2 : 1;
-  } catch {
-    return 1;
-  }
-}
-
 function Work() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isLoading, isError } = useGetProjects();
   const containerRef = useRef<HTMLDivElement>(null);
+  const exitingRef = useRef(false);
+  const exitTimersRef = useRef<number[]>([]);
   const [fadeTop, setFadeTop] = useState(0);
   const [fadeBottom, setFadeBottom] = useState(0);
-  const [viewMode, setViewMode] = useState<1 | 2>(readStoredViewMode);
+  const [exitingSlug, setExitingSlug] = useState<string | null>(null);
+  /** `others` = fade siblings; `selected` = then fade the chosen card */
+  const [exitPhase, setExitPhase] = useState<'others' | 'selected' | null>(
+    null
+  );
+
+  useEffect(
+    () => () => {
+      exitTimersRef.current.forEach((id) => window.clearTimeout(id));
+    },
+    []
+  );
 
   const activeSlug = searchParams.get(PROJECT_QUERY_KEY);
-  // Desktop mode 2 + all mobile opens stay on /work with ?project= for a smoother fade.
-  const overlayOpen = Boolean(activeSlug) && (isMobile || viewMode === 2);
+  // Mobile keeps the in-place overlay; desktop always uses the project page.
+  const overlayOpen = isMobile && Boolean(activeSlug);
 
   const updateFade = useCallback(() => {
+    // Desktop work scrolls the page; fades are mobile-only.
+    if (!isMobile) {
+      setFadeTop(0);
+      setFadeBottom(0);
+      return;
+    }
+
     const el = containerRef.current;
     if (!el) return;
 
@@ -77,11 +86,15 @@ function Work() {
 
     setFadeTop(intensity(distTop));
     setFadeBottom(intensity(distBottom));
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
+    if (!el || !isMobile) {
+      setFadeTop(0);
+      setFadeBottom(0);
+      return;
+    }
 
     updateFade();
     el.addEventListener('scroll', updateFade, { passive: true });
@@ -93,15 +106,7 @@ function Work() {
       el.removeEventListener('scroll', updateFade);
       ro.disconnect();
     };
-  }, [updateFade, data]);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(VIEW_MODE_KEY, String(viewMode));
-    } catch {
-      // ignore quota / private mode failures
-    }
-  }, [viewMode]);
+  }, [updateFade, data, isMobile]);
 
   const closeOverlay = useCallback(() => {
     const next = new URLSearchParams(searchParams);
@@ -111,16 +116,29 @@ function Work() {
 
   const openProject = useCallback(
     (slug: string) => {
-      if (!isMobile && viewMode === 1) {
-        navigate(`/work/${slug}`);
+      if (isMobile) {
+        const next = new URLSearchParams(searchParams);
+        next.set(PROJECT_QUERY_KEY, slug);
+        setSearchParams(next, { replace: false });
         return;
       }
 
-      const next = new URLSearchParams(searchParams);
-      next.set(PROJECT_QUERY_KEY, slug);
-      setSearchParams(next, { replace: false });
+      if (exitingRef.current) return;
+      exitingRef.current = true;
+      setExitingSlug(slug);
+      setExitPhase('others');
+
+      const fadeSelectedId = window.setTimeout(() => {
+        setExitPhase('selected');
+      }, WORK_EXIT_MS);
+
+      const navigateId = window.setTimeout(() => {
+        navigate(`/work/${slug}`);
+      }, WORK_EXIT_MS * 2);
+
+      exitTimersRef.current = [fadeSelectedId, navigateId];
     },
-    [isMobile, navigate, searchParams, setSearchParams, viewMode]
+    [isMobile, navigate, searchParams, setSearchParams]
   );
 
   if (isLoading) {
@@ -134,46 +152,37 @@ function Work() {
   return (
     <WorkWrapper $fadeTop={fadeTop} $fadeBottom={fadeBottom}>
       <WorkContainer ref={containerRef}>
-        {data?.map((project, index) => (
-          <ProjectCard
-            key={project._id}
-            $index={index}
-            onMouseEnter={() => prefetchProjectGallery(project)}
-            onFocus={() => prefetchProjectGallery(project)}
-            onClick={() => openProject(project.slug.current)}
-          >
-            <ProjectImage
-              src={getSanityImageUrl(project.images[0], GRID_IMAGE_OPTIONS)}
-              srcSet={buildSanityImageSrcSet(
-                project.images[0],
-                GRID_IMAGE_OPTIONS
-              )}
-              alt={project.title}
-              loading="lazy"
-            />
-            <ProjectTitle>{project.title}</ProjectTitle>
-          </ProjectCard>
-        ))}
-      </WorkContainer>
+        {data?.map((project, index) => {
+          const slug = project.slug.current;
+          const exitKeep = exitingSlug === slug && exitPhase === 'others';
+          const exitHide =
+            Boolean(exitingSlug) &&
+            (exitingSlug !== slug || exitPhase === 'selected');
 
-      <ViewModeToggle aria-label="Project view mode">
-        <ViewModeButton
-          type="button"
-          $active={viewMode === 1}
-          aria-pressed={viewMode === 1}
-          onClick={() => setViewMode(1)}
-        >
-          1
-        </ViewModeButton>
-        <ViewModeButton
-          type="button"
-          $active={viewMode === 2}
-          aria-pressed={viewMode === 2}
-          onClick={() => setViewMode(2)}
-        >
-          2
-        </ViewModeButton>
-      </ViewModeToggle>
+          return (
+            <ProjectCard
+              key={project._id}
+              $index={index}
+              $exitHide={exitHide}
+              $exitKeep={exitKeep}
+              onMouseEnter={() => prefetchProjectGallery(project)}
+              onFocus={() => prefetchProjectGallery(project)}
+              onClick={() => openProject(slug)}
+            >
+              <ProjectImage
+                src={getSanityImageUrl(project.images[0], GRID_IMAGE_OPTIONS)}
+                srcSet={buildSanityImageSrcSet(
+                  project.images[0],
+                  GRID_IMAGE_OPTIONS
+                )}
+                alt={project.title}
+                loading="lazy"
+              />
+              <ProjectTitle>{project.title}</ProjectTitle>
+            </ProjectCard>
+          );
+        })}
+      </WorkContainer>
 
       {overlayOpen && activeSlug && (
         <ProjectOverlay slug={activeSlug} onClose={closeOverlay} />
