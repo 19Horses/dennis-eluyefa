@@ -7,30 +7,34 @@ export const contactType = defineType({
   fields: [
     defineField({
       name: 'email',
+      title: 'Email',
       type: 'string',
-      description: 'Shown in both inquiry blocks.',
+      validation: (rule) => rule.required().email(),
+    }),
+    defineField({
+      name: 'printEmail',
+      title: 'Print email',
+      type: 'string',
       validation: (rule) => rule.required().email(),
     }),
     defineField({
       name: 'inquiriesText',
+      title: 'Inquiries text',
       type: 'text',
       rows: 4,
-      description:
-        'Top / left copy. Wrap words to underline like **business**. Email is appended automatically.',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'thanksMessage',
+      title: 'Thanks message',
       type: 'string',
-      description: 'Centre line (e.g. THANKS FOR STOPPING BY :))',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'printText',
+      title: 'Print text',
       type: 'text',
       rows: 4,
-      description:
-        'Bottom / right print inquiry copy. Wrap words to underline like **print**. Email is inserted automatically where you write {{email}}.',
       validation: (rule) => rule.required(),
     }),
   ],
