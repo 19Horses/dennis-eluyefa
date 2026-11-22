@@ -5,6 +5,7 @@ import axios from 'axios';
 export type ContactDoc = {
   _id: string;
   email?: string;
+  printEmail?: string;
   inquiriesText?: string;
   thanksMessage?: string;
   printText?: string;
@@ -14,6 +15,7 @@ const query = `
   *[_type == "contact"][0]{
     _id,
     email,
+    printEmail,
     inquiriesText,
     thanksMessage,
     printText

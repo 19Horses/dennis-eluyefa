@@ -11,7 +11,8 @@ import {
 } from './styles';
 
 const FALLBACK = {
-  email: 'contact@denniseluyefa.com',
+  email: 'studio@denniseluyefa.com',
+  printEmail: 'prints@denniseluyefa.com',
   inquiriesText:
     'for all **business**, **commission**, **collaborative**, or otherwise **professional** inquiries, please email:',
   thanksMessage: 'THANKS FOR STOPPING BY :)',
@@ -59,6 +60,7 @@ function Contact() {
   }
 
   const email = data?.email || FALLBACK.email;
+  const printEmail = data?.printEmail || FALLBACK.printEmail;
   const inquiriesText = data?.inquiriesText || FALLBACK.inquiriesText;
   const thanksMessage = data?.thanksMessage || FALLBACK.thanksMessage;
   const printText = data?.printText || FALLBACK.printText;
@@ -68,6 +70,7 @@ function Contact() {
   }
 
   const inquiriesHasEmail = inquiriesText.includes('{{email}}');
+  const printHasEmail = printText.includes('{{email}}');
 
   return (
     <ContactContainer>
@@ -81,7 +84,15 @@ function Contact() {
         ) : null}
       </LeftSubtext>
       <ContactText>{thanksMessage}</ContactText>
-      <RightSubtext>{renderMarkedText(printText, email)}</RightSubtext>
+      <RightSubtext>
+        {renderMarkedText(printText, printEmail)}
+        {!printHasEmail ? (
+          <>
+            {' '}
+            <Email>{printEmail}</Email>
+          </>
+        ) : null}
+      </RightSubtext>
     </ContactContainer>
   );
 }
