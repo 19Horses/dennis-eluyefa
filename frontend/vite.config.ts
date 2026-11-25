@@ -10,7 +10,7 @@ const vitestConfig: VitestUserConfigInterface = {
 };
 
 export default defineConfig({
-  base: "/dennis-eluyefa/",
+  base: "/",
   plugins: [react()],
   ...vitestConfig
 })
