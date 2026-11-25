@@ -2484,9 +2484,13 @@ void main(){
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 0.4rem;
     gap: 0.4rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
   }
 
   @media (min-width: 769px) {
