@@ -2524,6 +2524,15 @@ void main(){
   text-align: center;
   cursor: pointer;
 
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    line-height: 1.15;
+    width: 85%;
+    max-width: 85%;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
   &::selection {
     background-color: transparent;
   }
